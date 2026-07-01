@@ -26,6 +26,8 @@ export type Post = {
   isFamilyPost?: boolean
   isBeachPost?: boolean
   storyArcId?: string
+  higgsfieldJobId?: string
+  generatedAt?: string
 }
 
 export type CreatorMeta = {
