@@ -196,6 +196,31 @@ function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
               </div>
             </div>
 
+            {/* READY-TO-POST PREVIEW */}
+            <div className="border-2 border-emerald-500/40 bg-emerald-500/5 rounded-xl p-4 space-y-2">
+              <div className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">🚀 Overlay text (already baked into image, but here if you want it separately)</div>
+              <div className="text-neutral-100 whitespace-pre-wrap bg-neutral-950/60 p-3 rounded border border-neutral-800 text-sm font-semibold">
+                {story.overlayText}
+              </div>
+            </div>
+
+            {/* DOWNLOAD IMAGE */}
+            {story.imageUrl && (
+              <a
+                href={story.imageUrl}
+                download={`story-${story.id}-${story.creator}.png`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">⬇️</span>
+                  <span>Download image</span>
+                </span>
+                <span className="text-xs bg-white/10 px-2 py-1 rounded">Save to device</span>
+              </a>
+            )}
+
             {/* PUSH TO PLATFORM — stories only work on Instagram (TikTok has no stories) */}
             <button
               onClick={() => {

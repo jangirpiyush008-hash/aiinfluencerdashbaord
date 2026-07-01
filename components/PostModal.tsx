@@ -100,6 +100,39 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               </div>
             </div>
 
+            {/* READY-TO-POST PREVIEW */}
+            <div className="border-2 border-emerald-500/40 bg-emerald-500/5 rounded-xl p-4 space-y-2">
+              <div className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">🚀 Ready-to-post (caption + hashtags)</div>
+              <div className="text-neutral-100 whitespace-pre-wrap bg-neutral-950/60 p-3 rounded border border-neutral-800 text-sm">
+                {igCopy}
+              </div>
+              {tiktokAvailable && (
+                <div>
+                  <div className="text-[10px] text-cyan-300 uppercase tracking-wider mb-1">TikTok version (with FYP tags)</div>
+                  <div className="text-neutral-200 whitespace-pre-wrap bg-neutral-950/60 p-2 rounded border border-neutral-800 text-xs">
+                    {tiktokCopy}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* DOWNLOAD IMAGE */}
+            {post.imageUrl && (
+              <a
+                href={post.imageUrl}
+                download={`post-${post.id}-${post.creator}.png`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">⬇️</span>
+                  <span>Download image</span>
+                </span>
+                <span className="text-xs bg-white/10 px-2 py-1 rounded">Save to device</span>
+              </a>
+            )}
+
             {/* ONE-CLICK PLATFORM COPY (simplified) */}
             <div className="space-y-3">
               <div className="text-xs uppercase tracking-wider text-neutral-500">📤 Push to platform</div>
