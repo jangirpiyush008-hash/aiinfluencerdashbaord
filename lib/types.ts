@@ -22,6 +22,10 @@ export type Post = {
   petName?: 'Marshall' | 'Blinki'
   isProductVideo?: boolean
   videoTemplateId?: string
+  isBoyfriendPost?: boolean
+  isFamilyPost?: boolean
+  isBeachPost?: boolean
+  storyArcId?: string
 }
 
 export type CreatorMeta = {

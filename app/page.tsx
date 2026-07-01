@@ -6,8 +6,9 @@ import PostCard from '@/components/PostCard'
 import PostModal from '@/components/PostModal'
 import CreatorsView from '@/components/CreatorsView'
 import VideoTemplatesView from '@/components/VideoTemplatesView'
+import StoryView from '@/components/StoryView'
 
-type Tab = 'calendar' | 'creators' | 'videos'
+type Tab = 'calendar' | 'creators' | 'story' | 'videos'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 const STATUSES: PostStatus[] = ['pending', 'generated', 'scheduled', 'posted']
@@ -60,7 +61,7 @@ export default function Home() {
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <h1 className="text-2xl font-bold">🎬 AI Influencer Dashboard</h1>
-              <p className="text-sm text-neutral-400 mt-1">4 creators · 88 posts (56 photos + 32 videos) · Jul 2 – Jul 29, 2026</p>
+              <p className="text-sm text-neutral-400 mt-1">4 creators · 99 posts · Jul 2 – Jul 29, 2026 · Story arcs + family + Goa + Dubai</p>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
               {CREATORS.map((c) => (
@@ -84,6 +85,9 @@ export default function Home() {
             </TabButton>
             <TabButton active={tab === 'creators'} onClick={() => setTab('creators')}>
               👑 Creators
+            </TabButton>
+            <TabButton active={tab === 'story'} onClick={() => setTab('story')}>
+              📖 Story
             </TabButton>
             <TabButton active={tab === 'videos'} onClick={() => setTab('videos')}>
               🎥 Video Templates
@@ -159,6 +163,7 @@ export default function Home() {
       )}
 
       {tab === 'creators' && <CreatorsView />}
+      {tab === 'story' && <StoryView />}
       {tab === 'videos' && <VideoTemplatesView />}
 
       <PostModal post={openPost} onClose={() => setOpenPost(null)} />

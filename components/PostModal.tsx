@@ -55,7 +55,7 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
           <div className="p-6 space-y-5 overflow-y-auto max-h-[80vh]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-xs font-mono text-neutral-500 mb-1">POST #{post.id}/88</div>
+                <div className="text-xs font-mono text-neutral-500 mb-1">POST #{post.id}/99</div>
                 <div className="text-2xl font-bold" style={{ color: meta.color }}>{post.creator}</div>
                 <a href={meta.instagramUrl} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-neutral-200 transition-colors">
                   {meta.handle} · {meta.city}, {meta.country} ↗
