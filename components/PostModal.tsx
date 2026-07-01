@@ -7,6 +7,8 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   if (!post) return null
   const meta = CREATOR_META[post.creator]
 
+  const fullCopy = `${post.caption}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
+
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text)
     setCopied(label)
@@ -36,7 +38,7 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
                   {post.format} {post.slides > 1 && `· ${post.slides} slides`}
                 </div>
                 <div className="text-neutral-400 text-sm max-w-xs mx-auto px-4">
-                  Preview will appear here after Higgsfield generation.
+                  {post.format === 'video' ? 'Video will be generated when you share reference + product' : 'Preview will appear here after Higgsfield generation.'}
                 </div>
               </div>
             )}
@@ -46,13 +48,18 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
             {post.isPetPost && post.petName && (
               <div className="absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-xs font-semibold">🐕 {post.petName}</div>
             )}
+            {post.isProductVideo && (
+              <div className="absolute bottom-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">🎥 Product Video</div>
+            )}
           </div>
           <div className="p-6 space-y-5 overflow-y-auto max-h-[80vh]">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="text-xs font-mono text-neutral-500 mb-1">POST #{post.id}/64</div>
                 <div className="text-2xl font-bold" style={{ color: meta.color }}>{post.creator}</div>
-                <div className="text-sm text-neutral-400">{meta.handle} · {meta.city}</div>
+                <a href={meta.instagramUrl} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-neutral-200 transition-colors">
+                  {meta.handle} · {meta.city}, {meta.country} ↗
+                </a>
                 <div className="text-xs text-neutral-500 mt-1">{meta.niche}</div>
               </div>
               <button onClick={onClose} className="text-neutral-400 hover:text-white text-2xl leading-none">×</button>
@@ -86,42 +93,41 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
                   {copied === 'prompt' ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
-              <div className="text-xs text-neutral-400 bg-neutral-950 p-3 rounded-lg border border-neutral-800 max-h-32 overflow-y-auto">
+              <div className="text-xs text-neutral-400 bg-neutral-950 p-3 rounded-lg border border-neutral-800 max-h-32 overflow-y-auto whitespace-pre-wrap">
                 {post.prompt}
               </div>
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-xs uppercase tracking-wider text-neutral-500">Caption</div>
+            <div className="border-2 border-emerald-500/40 bg-emerald-500/5 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">🚀 Ready-to-post (Caption + Hashtags)</div>
                 <button
-                  onClick={() => copy(post.caption, 'caption')}
-                  className="text-xs bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded"
+                  onClick={() => copy(fullCopy, 'full')}
+                  className="text-xs bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
                 >
-                  {copied === 'caption' ? '✓ Copied' : 'Copy'}
+                  {copied === 'full' ? '✓ Copied!' : '📋 Copy All'}
                 </button>
               </div>
-              <div className="text-neutral-200 italic bg-neutral-950 p-3 rounded-lg border border-neutral-800">
-                "{post.caption}"
+              <div className="text-neutral-100 whitespace-pre-wrap bg-neutral-950/60 p-3 rounded border border-neutral-800 text-sm">
+                {fullCopy}
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-xs uppercase tracking-wider text-neutral-500">Hashtags (5 max)</div>
+              <div className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Individual fields</div>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => copy(post.caption, 'caption')}
+                  className="text-xs bg-neutral-800 hover:bg-neutral-700 px-3 py-2 rounded text-left"
+                >
+                  {copied === 'caption' ? '✓ Caption copied' : 'Copy caption only'}
+                </button>
                 <button
                   onClick={() => copy(post.hashtags.map(t => '#' + t).join(' '), 'tags')}
-                  className="text-xs bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded"
+                  className="text-xs bg-neutral-800 hover:bg-neutral-700 px-3 py-2 rounded text-left"
                 >
-                  {copied === 'tags' ? '✓ Copied' : 'Copy'}
+                  {copied === 'tags' ? '✓ Hashtags copied' : 'Copy hashtags only'}
                 </button>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {post.hashtags.map((tag) => (
-                  <span key={tag} className="text-xs bg-neutral-800 text-neutral-200 px-2 py-1 rounded-full">
-                    #{tag}
-                  </span>
-                ))}
               </div>
             </div>
 
