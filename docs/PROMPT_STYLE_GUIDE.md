@@ -166,6 +166,40 @@ Standard: `No CGI, no plastic skin, no doll eyes, no over-retouching, no cartoon
 
 ---
 
+## 4B. BODY + BUST + BOOTY RULES (Kiara / Mia / Ava)
+
+For all three bombshells:
+- **Bust:** natural full C-cup emphasis (bigger than default AI output, but STILL natural — not exaggerated / not implant-look)
+- **Cleavage:** prominent tasteful cleavage in every post — plunging necklines expose the "V" between breasts
+- **Booty (full body shots):** peachy toned round glutes visible through leggings, mid-air catch angles avoided
+- **Waist:** snatched, natural, hourglass
+- **Motion shots:** avoid mid-air action (looks fake AI) — prefer stationary sultry poses, phone selfies, or mirror shots
+- **Selfie POV rule for stories:** stories should mostly be phone-selfie POV (holding phone visible) — feels authentic vs "photographer took this"
+
+For Siya:
+- Modest cuts always, sweet natural bust (small to medium), no cleavage, no booty emphasis
+- Sweet Indian normal girl energy
+
+---
+
+## 4C. KIARA — Gym outfit ROTATION (never repeat the same set)
+
+Every gym post must be a DIFFERENT bold gym look:
+1. Deep-V neon coral Cultsport sports bra + matching high-waist leggings + cropped hoodie
+2. Racing red plunging bralette + booty-lifting Alo leggings
+3. Emerald green mesh cutout sports bra + high-waist leggings with butt lift seam
+4. Deep-V black sports bra with metallic bronze piping + cheeky mini booty shorts
+5. Plunging pink lace sports bra + white bike shorts
+6. Deep-V white sports bra + hot pink micro shorts
+7. Deep-V metallic silver sports bralette + booty leggings
+8. Cropped black hoodie unzipped + matching leggings (bralette peeking)
+9. Plunging burgundy sports set with side cutouts
+10. Deep-V royal blue sports bra + coral booty shorts
+
+Rotate through these — no back-to-back repeats.
+
+---
+
 ## 5. WHAT MAKES A "BAD" PROMPT
 
 ❌ *"Kiara at the gym, fit, hot"* — Too vague. Model has no visual anchors.
