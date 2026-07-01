@@ -89,31 +89,80 @@ Standard: `No CGI, no plastic skin, no doll eyes, no over-retouching, no cartoon
 
 ---
 
-## 4. CLOTHING PALETTE per creator
+## 4. FASHION IDENTITY per creator (MUST show in every post)
 
-### 🌸 SIYA (Bangalore, sweet Indian beauty)
-- **Base palette:** cream, soft peach, blush pink, dusty rose, white, gold
-- **Signatures:** cream silk camisole, cream ribbed knit, soft peach kurta, cream cotton tee, delicate gold chain, gold hoops
-- **Modesty rule:** always modest necklines, tasteful collarbones only, NEVER cleavage-focused
-- **Fits:** flowy, feminine, comfortable, non-figure-hugging
+### 🌸 SIYA — Modern Indian sweet-feminine (Bangalore beauty + fashion)
+**Aesthetic:** Sabyasachi meets Anokhi meets Charlotte Tilbury. India-forward with global polish. Feminine, modest, elegant. Never cleavage.
 
-### 🌹 KIARA (Mumbai bombshell)
-- **Base palette:** black, cream, gold, occasional emerald/burgundy accents
-- **Signatures:** plunging deep-V black sports bra, high-waisted black leggings, deep-V black silk slip camisole, black bodycon mini dress, cream co-ord sets, gold layered necklaces + gold body chain
-- **Boldness rule:** deep-V necklines REVEALING cleavage, toned abs often visible, snatched waist emphasis
-- **Fits:** figure-hugging bombshell silhouettes
+**Wardrobe categories:**
+- **Café/desk work:** silk kurti + palazzo OR cotton kurta + jeans + jhumkas + kolhapuri chappals
+- **Skincare/vanity content:** cream silk robe / matching cream silk pyjama set + jade roller + gold chain
+- **Family lunch:** banarasi silk sari OR anarkali + gold jhumkas + red bindi
+- **Date night:** blush pink midi dress + Amrapali jhumkas + delicate gold chain
+- **Sunday brunch:** printed cotton co-ord + Kolhapuri wedges + jhumkas
 
-### 🌊 MIA (Chicago fit bombshell)
-- **Base palette:** white, sage green, neon accents, black, denim
-- **Signatures:** deep-V white ribbed sports bra, high-waisted white bike shorts, deep-V neon triangle bikini, matching seamless leggings, white running sneakers, gold body chain
-- **Boldness rule:** deep-V REVEALING cleavage + toned athletic abs visible
-- **Fits:** athletic sculpted bombshell
+**Brands to reference:** Anokhi, Fabindia, Sabyasachi (occasion), Payal Singhal, Ritu Kumar, Amrapali (jewelry), Charlotte Tilbury, Tatcha, Drunk Elephant (beauty)
 
-### 🖤 AVA (NYC editorial bombshell)
-- **Base palette:** black, cream, champagne, nude, burgundy
-- **Signatures:** plunging deep-V black silk halter bodysuit, cream silk slip camisole, black bodycon mini dress, camel wool trench, black pointed heels, oversized Chanel sunglasses, gold layered necklaces
-- **Boldness rule:** deep-V REVEALING cleavage + elegant collarbones
-- **Fits:** sophisticated editorial bombshell (softer curves, not gym-fit)
+**Modesty rule:** ALWAYS modest necklines. Tasteful collarbones only. NEVER cleavage. Kurtas and silk slips only.
+
+**Every post must include:** either a distinctly Indian garment (kurti, sari, jhumkas, kolhapuri) OR luxury Indian beauty product (Charlotte Tilbury, Tatcha).
+
+---
+
+### 🌹 KIARA — Fitness bombshell + Mumbai fashion (60% gym / 40% chic)
+**Aesthetic:** Cult.fit bombshell by day, Bandra chic by night. Punjabi elegance for family. Bold, sexy, revealing but tasteful.
+
+**Wardrobe categories:**
+- **Gym daily:** deep-V black Cultsport/Nike sports bra + high-waist compression Alo leggings + Nike sneakers
+- **Post-gym café:** cropped Nike hoodie + bike shorts + Air Max
+- **Mumbai balcony evening:** deep-V black silk slip camisole + cream satin joggers + gold body chain
+- **Rooftop night out:** deep-V black satin bodycon mini + gold body chain + Sabyasachi jhumkas + Louboutin heels
+- **Family visit:** elegant Punjabi salwar-kameez + gold jhumkas
+- **Goa beach:** deep-V black triangle bikini + gold body chain + sarong
+
+**Brands to reference:** Cultsport, Nike, Lululemon, Alo Yoga, Gymshark, Zara (casual), Sabyasachi (occasion)
+
+**Boldness rule:** deep-V necklines REVEALING cleavage, toned abs visible, snatched waist.
+
+**Every post must include:** either gym gear (sports bra/compression) OR figure-hugging bombshell fashion.
+
+---
+
+### 🌊 MIA — Athletic bombshell + Chicago fit lifestyle (80% fitness / 20% casual)
+**Aesthetic:** Lululemon Alo athletic bombshell. Bright neon pops on cream/white base. Chicago city-fit girl.
+
+**Wardrobe categories:**
+- **Morning run:** deep-V neon-green Nike Dri-Fit sports bra + high-waist white bike shorts + white Nike Vaporfly
+- **Gym daily:** Alo Yoga matching seamless set (deep-V bra + leggings) + Nike sneakers
+- **Post-workout casual:** deep-V white ribbed sports bra + Chicago Bears cap + bike shorts
+- **Sunday chill:** deep-V cream Skims lounge set + Ugg slippers + coffee
+- **Chicago date night:** deep-V black satin slip dress + Louboutin heels + Blake
+- **Miami beach:** deep-V neon-green triangle bikini + gold body chain + sarong
+
+**Brands to reference:** Lululemon, Nike, Alo Yoga, Vuori, Bandier, Gymshark, Skims, Reformation (date night)
+
+**Boldness rule:** deep-V REVEALING cleavage + toned athletic abs visible.
+
+**Every post must include:** either fitness gear OR athletic-bombshell casual (never full formal).
+
+---
+
+### 🖤 AVA — Editorial luxury bombshell + NYC quiet-luxury fashion (100% fashion-forward)
+**Aesthetic:** Quiet-luxury editorial. Silk, cashmere, tailoring. Designer bags. Fashion Week regular. Never fast-fashion. Old-money-meets-new-money NYC.
+
+**Wardrobe categories:**
+- **NYC morning:** deep-V cream silk slip Balmain camisole + Loro Piana lounge pants + Chanel classic flap + Cartier bracelet
+- **Office chic:** structured cream blazer + deep-V black silk halter Balmain + tailored trousers + Louboutin So Kate
+- **Central Park with Marshall:** The Row oversized camel wool trench + deep-V cashmere + Celine Triomphe bag + jeans
+- **Cipriani dinner:** deep-V black satin slip Balmain mini dress + Louboutin + Prada clutch
+- **Fashion event red carpet:** deep-V structured black silk gown OR sequin Balmain bodycon
+- **Hamptons pool:** deep-V nude silk crochet bikini + gold body chain + Chanel straw hat
+
+**Brands to reference:** Chanel, Hermès, The Row, Loro Piana, Balmain, Bottega Veneta, Christian Louboutin, Celine, Prada, Cartier, Van Cleef
+
+**Boldness rule:** deep-V REVEALING cleavage + elegant collarbones. Editorial not gym.
+
+**Every post must include:** at least ONE named designer brand piece (bag, shoes, bracelet, or garment).
 
 ---
 

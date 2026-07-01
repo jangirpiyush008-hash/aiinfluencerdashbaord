@@ -151,6 +151,27 @@ function CreatorDetailModal({ creator, onClose }: { creator: Creator; onClose: (
               </div>
             </div>
 
+            <div className="bg-neutral-950 border border-neutral-800 rounded-xl p-4 space-y-3">
+              <div className="text-xs uppercase tracking-wider text-neutral-500">👗 Fashion identity</div>
+              <div className="text-sm text-neutral-200">{meta.fashionStyle}</div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-neutral-500 mb-1">Brands</div>
+                <div className="flex flex-wrap gap-1">
+                  {meta.fashionBrands.map(b => (
+                    <span key={b} className="text-[10px] bg-neutral-800 px-2 py-0.5 rounded-full">{b}</span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-neutral-500 mb-1">Signature looks</div>
+                <ul className="text-xs text-neutral-400 space-y-1">
+                  {meta.signatureLooks.map((l, i) => (
+                    <li key={i} className="flex gap-2"><span className="text-neutral-600">•</span>{l}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
             <div className="bg-neutral-950 border border-neutral-800 rounded-xl p-4 space-y-2">
               <div className="text-xs uppercase tracking-wider text-neutral-500">🚗 Signature Car (face-locked)</div>
               <div>

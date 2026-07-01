@@ -49,6 +49,9 @@ export type CreatorMeta = {
   carColor: string
   carPlate: string
   carDescription: string
+  fashionStyle: string
+  fashionBrands: string[]
+  signatureLooks: string[]
 }
 
 export const CREATOR_META: Record<Creator, CreatorMeta> = {
@@ -72,7 +75,17 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carModel: 'Hyundai Creta 2026',
     carColor: 'Phantom Black',
     carPlate: 'KA 01 SS 2026',
-    carDescription: 'Sleek black Hyundai Creta 2026 SUV with chrome grille, tinted windows, Karnataka registration plate "KA 01 SS 2026", parked outside Bangalore cafés or her home garage. Face lock the car — same plate always.'
+    carDescription: 'Sleek black Hyundai Creta 2026 SUV with chrome grille, tinted windows, Karnataka registration plate "KA 01 SS 2026", parked outside Bangalore cafés or her home garage. Face lock the car — same plate always.',
+    fashionStyle: 'Modern Indian sweet-feminine — Sabyasachi meets Anokhi. Silk kurtis, cotton kurta sets, printed midi dresses, banarasi silk saris for occasions, kolhapuri chappals, jhumkas + delicate gold chain. Beauty content in cream silk robes, luxury vanity setups. Indian modern-professional workwear = kurti + palazzo.',
+    fashionBrands: ['Anokhi', 'Fabindia', 'Sabyasachi', 'Payal Singhal', 'Ritu Kumar', 'Nappa Dori', 'Amrapali', 'Charlotte Tilbury', 'Tatcha', 'Drunk Elephant'],
+    signatureLooks: [
+      'Cream/peach silk kurta + gold jhumkas + kolhapuri chappals (café day)',
+      'Printed cotton kurti + palazzo + delicate gold chain (office/desk work)',
+      'Banarasi silk sari + red bindi + gold jewelry (family lunch / occasion)',
+      'Cream silk robe + jade roller (skincare content)',
+      'Blush pink midi dress + Amrapali jhumkas (date night)',
+      'Ivory anarkali + kolhapuri wedges (Sunday brunch)'
+    ]
   },
   Kiara: {
     handle: '@kiararai_fit',
@@ -94,7 +107,17 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carModel: 'Mini Cooper Countryman',
     carColor: 'British Racing Green',
     carPlate: 'MH 04 KR 2024',
-    carDescription: 'British racing green Mini Cooper Countryman with white roof + white bonnet stripes, JCW styling, black alloys, Maharashtra plate "MH 04 KR 2024". Bandra Mumbai apartment garage or Cult.fit parking. Face lock the exact car — same plate always.'
+    carDescription: 'British racing green Mini Cooper Countryman with white roof + white bonnet stripes, JCW styling, black alloys, Maharashtra plate "MH 04 KR 2024". Bandra Mumbai apartment garage or Cult.fit parking. Face lock the exact car — same plate always.',
+    fashionStyle: 'Fitness-forward bombshell — Cult.fit gym gear for 60% of posts + Bandra-cool bombshell fashion off-gym. Gym wardrobe = deep-V sports bras, high-waist compression leggings, cropped hoodies. Off-gym = deep-V black silk slip dresses, satin bodycon, cream co-ord lounge sets. Punjabi elegance for family posts.',
+    fashionBrands: ['Cultsport', 'Nike', 'Lululemon', 'Alo Yoga', 'Gymshark', 'Zara', 'H&M Studio', 'Sabyasachi (occasion)', 'Manish Malhotra (occasion)'],
+    signatureLooks: [
+      'Deep-V black Cultsport sports bra + high-waist compression leggings + sneakers (gym daily)',
+      'Cropped Nike hoodie + bike shorts + Air Max sneakers (post-gym café)',
+      'Deep-V black silk slip camisole + cream satin joggers (Mumbai balcony)',
+      'Deep-V black satin bodycon mini + gold body chain + heels (rooftop night)',
+      'Punjabi salwar-kameez + jhumkas (family visit)',
+      'Deep-V black bikini + gold body chain + sarong (Goa beach)'
+    ]
   },
   Mia: {
     handle: '@miafitcartel',
@@ -116,7 +139,17 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carModel: 'Hummer EV SUV',
     carColor: 'Interstellar Black',
     carPlate: 'IL MCARTER',
-    carDescription: 'Massive black Hummer EV SUV (matte black finish), aggressive aftermarket wheels, blackout windows, Illinois vanity plate "MCARTER". Parked at Chicago high-rise gym garage or her West Loop building. Face lock — same plate always.'
+    carDescription: 'Massive black Hummer EV SUV (matte black finish), aggressive aftermarket wheels, blackout windows, Illinois vanity plate "MCARTER". Parked at Chicago high-rise gym garage or her West Loop building. Face lock — same plate always.',
+    fashionStyle: 'Athletic bombshell — 80% fitness gear (matching seamless sets, deep-V sports bras). Off-gym = lounge sets, slip dresses for date nights, denim for casual. Bright pops (neon green, coral) mixed with cream/white base.',
+    fashionBrands: ['Lululemon', 'Nike', 'Alo Yoga', 'Bandier', 'Vuori', 'Gymshark', 'Skims', 'Free People (casual)', 'Reformation (date night)'],
+    signatureLooks: [
+      'Deep-V neon-green Nike Dri-Fit sports bra + high-waist white bike shorts + white Vaporfly sneakers (Lake Michigan run)',
+      'Alo Yoga matching seamless set (deep-V sports bra + leggings) + Blake gym partner (indoor gym)',
+      'Deep-V white ribbed sports bra + Chicago Bears cap + bike shorts (post-workout casual)',
+      'Deep-V cream lounge set + Ugg slippers + coffee (Sunday chill)',
+      'Deep-V black satin slip dress + heels + Blake (Chicago date night)',
+      'Deep-V neon-green triangle bikini + gold body chain + sarong (Miami beach)'
+    ]
   },
   Ava: {
     handle: '@ava.fabfashion',
@@ -138,6 +171,16 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carModel: 'Ferrari 488 GTB',
     carColor: 'Rosa Corsa (custom pink)',
     carPlate: 'AVA MNR',
-    carDescription: 'Custom Rosa Corsa pink Ferrari 488 GTB with beige leather interior + Ferrari yellow calipers, NY vanity plate "AVA MNR". Parked outside NYC luxury apartments, Hamptons driveway, or valet at Cipriani. Face lock — same plate always.'
+    carDescription: 'Custom Rosa Corsa pink Ferrari 488 GTB with beige leather interior + Ferrari yellow calipers, NY vanity plate "AVA MNR". Parked outside NYC luxury apartments, Hamptons driveway, or valet at Cipriani. Face lock — same plate always.',
+    fashionStyle: 'Quiet-luxury editorial bombshell — silk slips, tailored blazers, designer bags, Louboutin heels, cashmere sweaters. Fashion Week backstage energy. Old-money-meets-new-money NYC. Everyday luxury: Loro Piana + The Row + Hermès rotation. Occasion: Chanel, Balmain, Bottega. Never fast-fashion.',
+    fashionBrands: ['Chanel', 'Hermès', 'The Row', 'Loro Piana', 'Balmain', 'Bottega Veneta', 'Christian Louboutin', 'Celine', 'Prada', 'Cartier', 'Van Cleef & Arpels'],
+    signatureLooks: [
+      'Deep-V black silk halter Balmain bodysuit + Loro Piana wide-leg cream trousers + Louboutin So Kate heels (dinner)',
+      'Deep-V cream silk slip camisole + Chanel classic flap + Cartier love bracelet (NYC morning)',
+      'The Row oversized camel wool trench + fitted deep-V black cashmere + Celine Triomphe bag (Central Park with Marshall)',
+      'Deep-V black satin slip Balmain mini dress + Louboutin So Kate + Prada clutch (Cipriani date)',
+      'Deep-V nude silk crochet bikini + gold body chain + Chanel straw hat (Hamptons pool)',
+      'Deep-V black silk sequin Balmain bodycon + Bottega heels (Dubai Zuma)'
+    ]
   }
 }
