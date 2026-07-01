@@ -185,6 +185,24 @@ function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
               </div>
             </div>
 
+            {/* PUSH TO PLATFORM — stories only work on Instagram (TikTok has no stories) */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(story.overlayText)
+                alert('Overlay text copied! Open IG Story → add text → paste')
+              }}
+              className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-pink-500 to-orange-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+            >
+              <span className="flex items-center gap-2">
+                <span className="text-lg">📷</span>
+                <span>Push to Instagram Story</span>
+              </span>
+              <span className="text-xs bg-white/20 px-2 py-1 rounded">Copy overlay text</span>
+            </button>
+            <div className="text-[10px] text-neutral-500 text-center">
+              Stories only exist on Instagram (TikTok doesn't have stories)
+            </div>
+
             {story.storyArc && (
               <div className="text-xs bg-orange-500/10 border border-orange-500/40 rounded-lg p-3">
                 <span className="text-orange-300 font-semibold uppercase tracking-wider">Story arc:</span>

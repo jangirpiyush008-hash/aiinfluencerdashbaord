@@ -52,6 +52,9 @@ export type CreatorMeta = {
   fashionStyle: string
   fashionBrands: string[]
   signatureLooks: string[]
+  tiktokHandle?: string
+  tiktokUrl?: string
+  tiktokAvailable: boolean
 }
 
 export const CREATOR_META: Record<Creator, CreatorMeta> = {
@@ -85,7 +88,8 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
       'Cream silk robe + jade roller (skincare content)',
       'Blush pink midi dress + Amrapali jhumkas (date night)',
       'Ivory anarkali + kolhapuri wedges (Sunday brunch)'
-    ]
+    ],
+    tiktokAvailable: false
   },
   Kiara: {
     handle: '@kiararai_fit',
@@ -117,7 +121,8 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
       'Deep-V black satin bodycon mini + gold body chain + heels (rooftop night)',
       'Punjabi salwar-kameez + jhumkas (family visit)',
       'Deep-V black bikini + gold body chain + sarong (Goa beach)'
-    ]
+    ],
+    tiktokAvailable: false
   },
   Mia: {
     handle: '@miafitcartel',
@@ -149,7 +154,10 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
       'Deep-V cream lounge set + Ugg slippers + coffee (Sunday chill)',
       'Deep-V black satin slip dress + heels + Blake (Chicago date night)',
       'Deep-V neon-green triangle bikini + gold body chain + sarong (Miami beach)'
-    ]
+    ],
+    tiktokHandle: '@miafitcartel',
+    tiktokUrl: 'https://www.tiktok.com/@miafitcartel',
+    tiktokAvailable: true
   },
   Ava: {
     handle: '@ava.fabfashion',
@@ -181,6 +189,9 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
       'Deep-V black satin slip Balmain mini dress + Louboutin So Kate + Prada clutch (Cipriani date)',
       'Deep-V nude silk crochet bikini + gold body chain + Chanel straw hat (Hamptons pool)',
       'Deep-V black silk sequin Balmain bodycon + Bottega heels (Dubai Zuma)'
-    ]
+    ],
+    tiktokHandle: '@ava.fabfashion',
+    tiktokUrl: 'https://www.tiktok.com/@ava.fabfashion',
+    tiktokAvailable: true
   }
 }

@@ -7,7 +7,9 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   if (!post) return null
   const meta = CREATOR_META[post.creator]
 
-  const fullCopy = `${post.caption}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
+  const igCopy = `${post.caption}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
+  const tiktokCopy = `${post.caption}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou`
+  const tiktokAvailable = meta.tiktokAvailable
 
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text)
@@ -98,36 +100,46 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               </div>
             </div>
 
-            <div className="border-2 border-emerald-500/40 bg-emerald-500/5 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">🚀 Ready-to-post (Caption + Hashtags)</div>
-                <button
-                  onClick={() => copy(fullCopy, 'full')}
-                  className="text-xs bg-emerald-500 hover:bg-emerald-400 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
-                >
-                  {copied === 'full' ? '✓ Copied!' : '📋 Copy All'}
-                </button>
-              </div>
-              <div className="text-neutral-100 whitespace-pre-wrap bg-neutral-950/60 p-3 rounded border border-neutral-800 text-sm">
-                {fullCopy}
-              </div>
-            </div>
+            {/* ONE-CLICK PLATFORM COPY (simplified) */}
+            <div className="space-y-3">
+              <div className="text-xs uppercase tracking-wider text-neutral-500">📤 Push to platform</div>
 
-            <div>
-              <div className="text-xs uppercase tracking-wider text-neutral-500 mb-2">Individual fields</div>
-              <div className="grid grid-cols-2 gap-2">
+              {/* Instagram button */}
+              <button
+                onClick={() => copy(igCopy, 'ig')}
+                className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-pink-500 to-orange-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+              >
+                <span className="flex items-center gap-2">
+                  <span className="text-lg">📷</span>
+                  <span>Push to Instagram</span>
+                </span>
+                <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                  {copied === 'ig' ? '✓ Copied — open IG app' : 'Copy caption + hashtags'}
+                </span>
+              </button>
+
+              {/* TikTok button (only for Ava + Mia) */}
+              {tiktokAvailable ? (
                 <button
-                  onClick={() => copy(post.caption, 'caption')}
-                  className="text-xs bg-neutral-800 hover:bg-neutral-700 px-3 py-2 rounded text-left"
+                  onClick={() => copy(tiktokCopy, 'tt')}
+                  className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
                 >
-                  {copied === 'caption' ? '✓ Caption copied' : 'Copy caption only'}
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">🎵</span>
+                    <span>Push to TikTok</span>
+                  </span>
+                  <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                    {copied === 'tt' ? '✓ Copied — open TikTok' : 'Copy caption + FYP tags'}
+                  </span>
                 </button>
-                <button
-                  onClick={() => copy(post.hashtags.map(t => '#' + t).join(' '), 'tags')}
-                  className="text-xs bg-neutral-800 hover:bg-neutral-700 px-3 py-2 rounded text-left"
-                >
-                  {copied === 'tags' ? '✓ Hashtags copied' : 'Copy hashtags only'}
-                </button>
+              ) : (
+                <div className="text-xs text-neutral-500 bg-neutral-950 px-4 py-2 rounded-lg border border-neutral-800">
+                  🚫 TikTok not available for {post.creator} (banned in India)
+                </div>
+              )}
+
+              <div className="text-[10px] text-neutral-500 text-center">
+                Auto-publish via API coming soon (after Meta + TikTok approval)
               </div>
             </div>
 

@@ -8,8 +8,9 @@ import CreatorsView from '@/components/CreatorsView'
 import VideoTemplatesView from '@/components/VideoTemplatesView'
 import StoryView from '@/components/StoryView'
 import StoriesView from '@/components/StoriesView'
+import AnalyticsView from '@/components/AnalyticsView'
 
-type Tab = 'calendar' | 'stories' | 'creators' | 'story' | 'videos'
+type Tab = 'calendar' | 'stories' | 'creators' | 'story' | 'videos' | 'analytics'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 const STATUSES: PostStatus[] = ['pending', 'generated', 'scheduled', 'posted']
@@ -96,6 +97,9 @@ export default function Home() {
             <TabButton active={tab === 'videos'} onClick={() => setTab('videos')}>
               🎥 Video Templates
             </TabButton>
+            <TabButton active={tab === 'analytics'} onClick={() => setTab('analytics')}>
+              📊 Analytics
+            </TabButton>
           </div>
         </div>
       </header>
@@ -170,6 +174,7 @@ export default function Home() {
       {tab === 'creators' && <CreatorsView />}
       {tab === 'story' && <StoryView />}
       {tab === 'videos' && <VideoTemplatesView />}
+      {tab === 'analytics' && <AnalyticsView />}
 
       <PostModal post={openPost} onClose={() => setOpenPost(null)} />
     </main>

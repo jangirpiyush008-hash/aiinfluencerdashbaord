@@ -45,8 +45,19 @@ export default function CreatorsView() {
                   onClick={(e) => e.stopPropagation()}
                   className="text-xs text-neutral-400 hover:text-neutral-200 flex items-center gap-1"
                 >
-                  {meta.handle} ↗
+                  📷 {meta.handle} ↗
                 </a>
+                {meta.tiktokAvailable && meta.tiktokUrl && (
+                  <a
+                    href={meta.tiktokUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-xs text-neutral-400 hover:text-neutral-200 flex items-center gap-1"
+                  >
+                    🎵 {meta.tiktokHandle} ↗
+                  </a>
+                )}
                 <div className="flex gap-3 text-xs text-neutral-500 pt-1">
                   <span>{postCount} posts</span>
                   <span>·</span>
@@ -96,9 +107,20 @@ function CreatorDetailModal({ creator, onClose }: { creator: Creator; onClose: (
             <div className="flex items-start justify-between">
               <div>
                 <div className="text-sm font-semibold uppercase tracking-widest" style={{ color: meta.color }}>{meta.niche}</div>
-                <a href={meta.instagramUrl} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-white mt-1 block">
-                  {meta.handle} ↗
-                </a>
+                <div className="flex flex-col gap-1 mt-1">
+                  <a href={meta.instagramUrl} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-white flex items-center gap-2">
+                    <span>📷</span> {meta.handle} ↗
+                  </a>
+                  {meta.tiktokAvailable && meta.tiktokUrl ? (
+                    <a href={meta.tiktokUrl} target="_blank" rel="noreferrer" className="text-sm text-neutral-400 hover:text-white flex items-center gap-2">
+                      <span>🎵</span> {meta.tiktokHandle} ↗
+                    </a>
+                  ) : (
+                    <span className="text-xs text-neutral-600 flex items-center gap-2">
+                      <span>🚫</span> TikTok not available (banned in India)
+                    </span>
+                  )}
+                </div>
               </div>
               <button onClick={onClose} className="text-neutral-400 hover:text-white text-2xl leading-none">×</button>
             </div>
