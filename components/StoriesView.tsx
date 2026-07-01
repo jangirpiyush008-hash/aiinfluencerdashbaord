@@ -143,14 +143,24 @@ function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
-          <div className="bg-neutral-950 aspect-[9/16] md:aspect-auto min-h-[420px] flex items-center justify-center relative p-6">
-            <div className="text-8xl">{story.emoji}</div>
-            <div className="absolute top-4 left-4 right-4 text-center">
-              <div className="text-white/95 text-lg font-bold drop-shadow-lg">{story.overlayText}</div>
-            </div>
-            <div className="absolute bottom-4 left-4 right-4 text-center">
+          <div className="bg-neutral-950 aspect-[9/16] md:aspect-auto min-h-[520px] flex items-center justify-center relative overflow-hidden">
+            {story.imageUrl ? (
+              <img
+                src={story.imageUrl}
+                alt={story.concept}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <>
+                <div className="text-8xl">{story.emoji}</div>
+                <div className="absolute top-4 left-4 right-4 text-center">
+                  <div className="text-white/95 text-lg font-bold drop-shadow-lg">{story.overlayText}</div>
+                </div>
+              </>
+            )}
+            <div className="absolute bottom-4 left-4 right-4 text-center bg-gradient-to-t from-black/80 to-transparent pt-8 pb-2">
               <div className="text-sm font-semibold" style={{ color: meta.color }}>{story.creator}</div>
-              <div className="text-xs text-neutral-500">{story.date} · {story.day}</div>
+              <div className="text-xs text-neutral-400">{story.date} · {story.day}</div>
             </div>
             {story.storyArc && (
               <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
