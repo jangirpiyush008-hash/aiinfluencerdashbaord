@@ -1,0 +1,26 @@
+# deps
+node_modules/
+.pnp
+.pnp.js
+
+# next
+.next/
+out/
+build/
+
+# env
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# system
+.DS_Store
+*.log
+
+# ide
+.vscode/
+.idea/
+
+# claude
+.claude/
