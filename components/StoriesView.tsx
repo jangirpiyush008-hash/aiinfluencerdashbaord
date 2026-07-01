@@ -81,6 +81,8 @@ export default function StoriesView() {
 
 function StoryCard({ story, onClick }: { story: Story; onClick: () => void }) {
   const meta = CREATOR_META[story.creator]
+  const hasImage = !!story.imageUrl
+
   return (
     <button
       onClick={onClick}
@@ -88,23 +90,32 @@ function StoryCard({ story, onClick }: { story: Story; onClick: () => void }) {
       style={{ borderTopColor: meta.color, borderTopWidth: 3 }}
     >
       {/* Instagram Story 9:16 aspect ratio */}
-      <div className="aspect-[9/16] relative bg-neutral-950 flex items-center justify-center p-3 overflow-hidden">
-        {/* Emoji fills the "photo" area */}
-        <div className="text-5xl mb-6">{story.emoji}</div>
-
-        {/* Overlay text at top (like real IG story caption) */}
-        <div className="absolute top-3 left-3 right-3 text-center">
-          <div className="text-[10px] text-white/90 font-bold uppercase tracking-wider drop-shadow-lg">
-            {story.overlayText}
+      <div className="aspect-[9/16] relative bg-neutral-950 overflow-hidden">
+        {hasImage ? (
+          <img
+            src={story.imageUrl}
+            alt={story.concept}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-3">
+            <div className="text-5xl mb-6">{story.emoji}</div>
+            {/* Show overlay text at top only when no image (image already has text baked in) */}
+            <div className="absolute top-3 left-3 right-3 text-center">
+              <div className="text-[10px] text-white/90 font-bold uppercase tracking-wider drop-shadow-lg">
+                {story.overlayText}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Creator name at bottom (like IG username tag) */}
-        <div className="absolute bottom-2 left-3 right-3 text-center">
+        <div className="absolute bottom-2 left-3 right-3 text-center bg-gradient-to-t from-black/80 to-transparent pt-6 pb-1">
           <div className="text-[10px] font-semibold" style={{ color: meta.color }}>
             {story.creator}
           </div>
-          <div className="text-[9px] text-neutral-500">{story.day}</div>
+          <div className="text-[9px] text-neutral-400">{story.day}</div>
         </div>
       </div>
     </button>
