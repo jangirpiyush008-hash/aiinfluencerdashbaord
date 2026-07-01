@@ -60,7 +60,7 @@ export default function Home() {
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <h1 className="text-2xl font-bold">🎬 AI Influencer Dashboard</h1>
-              <p className="text-sm text-neutral-400 mt-1">4 creators · 64 posts · Jul 2 – Jul 29, 2026</p>
+              <p className="text-sm text-neutral-400 mt-1">4 creators · 88 posts (56 photos + 32 videos) · Jul 2 – Jul 29, 2026</p>
             </div>
             <div className="flex flex-wrap gap-2 items-center">
               {CREATORS.map((c) => (

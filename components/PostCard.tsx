@@ -39,7 +39,7 @@ export default function PostCard({ post, onClick }: { post: Post; onClick: () =>
       </div>
       <div className="p-3 space-y-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-mono text-neutral-500">#{post.id}/64</span>
+          <span className="text-xs font-mono text-neutral-500">#{post.id}/88</span>
           <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusColor}`}>{post.status}</span>
         </div>
         <div>
