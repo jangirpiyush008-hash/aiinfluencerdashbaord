@@ -1,0 +1,136 @@
+# 🎨 HIGGSFIELD PROMPT STYLE GUIDE
+
+**Every prompt in this repo follows this structure for maximum output accuracy.**
+
+---
+
+## 1. FACE-LOCK RULES (mandatory)
+
+| Situation | Model | How to lock face |
+|---|---|---|
+| **Main creator alone** (Siya, Kiara, Mia, Ava) | `soul_2` (Soul V2) | `soul_id: <trained Soul ID>` |
+| **Main creator + product** | `soul_2` | `soul_id` + `medias[{role:image, value: product_media_id}]` |
+| **New character** (boyfriend, family member, pet) | `nano_banana_2` | Generate anchor image → save as Reference Element via `show_reference_elements action=create` → then use `<<<element_id>>>` in future prompts |
+| **Main creator + boyfriend/family** | `nano_banana_2` | Embed BOTH element placeholders: `<<<creator_element_id>>> + <<<boyfriend_element_id>>>` |
+| **Multiple main creators** (Dubai reunion) | `nano_banana_2` | Embed all 4 element placeholders: `<<<siya>>> + <<<kiara>>> + <<<mia>>> + <<<ava>>>` |
+
+**Soul IDs (locked):**
+- Siya: `69db0f1c-ca4d-4238-aa59-9a23bfefb06d`
+- Kiara: `1e9f2dc4-1196-4778-83e3-5155b2fa432a`
+- Mia: `97625973-f756-4378-83d9-2336c2d26250`
+- Ava: `4e3cc9d3-4b86-4fc6-9b38-f4186fed4d7f`
+
+**Reference Elements (locked):**
+- Siya: `659002e5-2a38-4295-bb29-2161c98a058d`
+- Kiara: `62e48caf-931d-45a0-a2a7-b4a57c63ba0b`
+- Mia: `347b753b-1408-4c5b-b8f6-8dbde82be595`
+- Ava: `bf46fc65-6637-4898-b5ac-99e10b772aca`
+- Dymatize whey tub: `3697a342-436f-4509-abf8-ceaeed8eb413`
+- Pending (create on first appearance): Marshall, Blinki, all boyfriends, all family, all cars
+
+---
+
+## 2. PROMPT SECTIONS (all 8 required for detailed accuracy)
+
+### A. CHARACTER + FACE LOCK
+`[Creator name] (Soul V2 lock: soul_id=<id>) — [physical trait recap]`
+
+### B. WARDROBE (detailed clothing)
+Include: exact garment name, color, cut, fit, brand hint, layering, accessories.
+- **Kiara/Mia/Ava:** always include "plunging deep-V neckline showing REVEALING cleavage"
+- **Siya:** modest cuts, cream/pastel silk, tasteful collarbones NOT cleavage
+- Always mention: shoes, jewelry (gold layered necklaces standard), bag, watch, sunglasses
+
+### C. HAIR + MAKEUP
+- Hair: length, texture, style (bombshell waves / sleek ponytail / half-up), state (wet / dry / flying)
+- Makeup: soft glam / dewy / smoky / no-makeup — specify products (glossy nude lip, bronze eye, dewy highlight)
+
+### D. POSE + EXPRESSION
+- Body position (mid-stride, seated, leaning, kneeling)
+- Hand placement (on hip, adjusting earring, at mirror)
+- Gaze (direct camera, over shoulder, looking away)
+- Facial expression (sultry smirk, joyful laugh, soft smile, contemplative)
+
+### E. SETTING (specific location)
+- Named venue when applicable (Cult.fit Bandra, Nobu Dubai, Anjuna Beach Goa, Cipriani NYC, Miami South Beach)
+- Time of day (golden hour, morning, moody dusk)
+- Interior details (marble kitchen, industrial gym, chic café patio, luxury bedroom)
+- Background elements (Mumbai skyline, Chicago Lake Michigan, NYC storefronts blurred)
+
+### F. LIGHTING + CINEMATOGRAPHY
+- Source (natural window, ring light, moody sconce, golden sunset, red neon)
+- Direction (front-left, from side, backlit)
+- Quality (soft warm, hard moody, cinematic)
+- Camera style (phone selfie POV, editorial framing, iPhone 17 Pro Max quality)
+
+### G. REALISM MARKERS
+Every prompt ends with:
+`Hyperrealistic Instagram [format] 4:5 or 9:16, real skin pores, slight film grain, iPhone 17 Pro Max quality. [Boldness cue]`
+
+Boldness cues:
+- Kiara/Mia/Ava: `BOLD SEXY bombshell energy — revealing but tasteful`
+- Siya: `SWEET soft Indian beauty — modest and elegant`
+
+### H. NEGATIVE PROMPTS (avoid)
+Standard: `No CGI, no plastic skin, no doll eyes, no over-retouching, no cartoon look.`
+
+---
+
+## 3. STORY vs POST PROMPT DIFFERENCES
+
+| Attribute | Feed post | Story |
+|---|---|---|
+| Aspect ratio | 4:5 (Instagram feed) | 9:16 (Instagram Stories) |
+| Prompt length | 4-8 sentences (detailed) | 2-4 sentences (quick snapshot) |
+| Caption vibe | 2-3 paragraphs | 1-line text overlay ON the photo |
+| Face lock | Soul V2 preferred | Soul V2 or Nano Banana |
+| Realism | Editorial cinematic | Casual snapshot phone-mic feel |
+| Hashtags | 5 max | 0 (stories don't use hashtags) |
+
+---
+
+## 4. CLOTHING PALETTE per creator
+
+### 🌸 SIYA (Bangalore, sweet Indian beauty)
+- **Base palette:** cream, soft peach, blush pink, dusty rose, white, gold
+- **Signatures:** cream silk camisole, cream ribbed knit, soft peach kurta, cream cotton tee, delicate gold chain, gold hoops
+- **Modesty rule:** always modest necklines, tasteful collarbones only, NEVER cleavage-focused
+- **Fits:** flowy, feminine, comfortable, non-figure-hugging
+
+### 🌹 KIARA (Mumbai bombshell)
+- **Base palette:** black, cream, gold, occasional emerald/burgundy accents
+- **Signatures:** plunging deep-V black sports bra, high-waisted black leggings, deep-V black silk slip camisole, black bodycon mini dress, cream co-ord sets, gold layered necklaces + gold body chain
+- **Boldness rule:** deep-V necklines REVEALING cleavage, toned abs often visible, snatched waist emphasis
+- **Fits:** figure-hugging bombshell silhouettes
+
+### 🌊 MIA (Chicago fit bombshell)
+- **Base palette:** white, sage green, neon accents, black, denim
+- **Signatures:** deep-V white ribbed sports bra, high-waisted white bike shorts, deep-V neon triangle bikini, matching seamless leggings, white running sneakers, gold body chain
+- **Boldness rule:** deep-V REVEALING cleavage + toned athletic abs visible
+- **Fits:** athletic sculpted bombshell
+
+### 🖤 AVA (NYC editorial bombshell)
+- **Base palette:** black, cream, champagne, nude, burgundy
+- **Signatures:** plunging deep-V black silk halter bodysuit, cream silk slip camisole, black bodycon mini dress, camel wool trench, black pointed heels, oversized Chanel sunglasses, gold layered necklaces
+- **Boldness rule:** deep-V REVEALING cleavage + elegant collarbones
+- **Fits:** sophisticated editorial bombshell (softer curves, not gym-fit)
+
+---
+
+## 5. WHAT MAKES A "BAD" PROMPT
+
+❌ *"Kiara at the gym, fit, hot"* — Too vague. Model has no visual anchors.
+
+✅ *"Kiara Rai (Soul V2 lock: soul_id=1e9f2dc4-1196-4778-83e3-5155b2fa432a) mid-deadlift at Cult.fit gym Bandra Mumbai, moody industrial black hex walls with red neon accent lighting behind, sleek tight high ponytail with 2 face-framing strands falling, sweaty sheen on forehead + collarbones, intense focused expression with clenched jaw, wearing plunging deep-V black Nike Dri-Fit sports bra REVEALING cleavage + high-waisted black seamless leggings showing sculpted 4-pack abs, tiny mole above right upper lip visible (identity lock), warm cinematic gym lighting from overhead, blurred weight rack behind. Hyperrealistic Instagram feed 4:5, real skin pores + sweat detail, slight film grain, iPhone 17 Pro Max quality. BOLD SEXY bombshell fit energy — revealing but tasteful. No CGI, no plastic skin, no doll eyes."*
+
+---
+
+## 6. GENERATION WORKFLOW
+
+1. Pick post from Calendar tab
+2. Open modal → copy prompt
+3. If new face needed (boyfriend, family, car reveal) → first: `nano_banana_2` with detailed face description → save output as Reference Element → THEN use element placeholder in main prompt
+4. Fire `soul_2` (or `nano_banana_2` if multi-character) with prompt
+5. Once image lands → click "Copy All" (caption + hashtags)
+6. Post to Instagram via Meta Business Suite
+7. Update dashboard status to `posted`

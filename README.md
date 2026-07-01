@@ -53,6 +53,21 @@ All 64 posts live in `lib/calendar.ts`. Each post has:
 - Image URL slot (populated after Higgsfield gen)
 - Flags: `isDubaiArc`, `isPetPost`, `petName`
 
+## Prompt style guide
+
+All prompts follow a strict 8-section structure — see [`docs/PROMPT_STYLE_GUIDE.md`](./docs/PROMPT_STYLE_GUIDE.md).
+
+**Face-lock rules:**
+- Main creator alone → `soul_2` with `soul_id`
+- New face (boyfriend/family/car/pet) → `nano_banana_2` first to generate, save as Reference Element, then use `<<<element_id>>>` in future prompts
+- Multi-character → `nano_banana_2` with multiple `<<<element>>>` placeholders
+
+**Boldness rules:**
+- Kiara / Mia / Ava = plunging deep-V, revealing cleavage, bombshell energy
+- Siya = sweet Indian normal beauty, modest cuts, tasteful collarbones only
+
+**Family posts:** hard-capped at 3 total (Siya, Kiara, Mia — 1 each). Solo/lifestyle content dominates.
+
 ## Roadmap
 
 - [ ] Wire Higgsfield MCP for one-click gen from dashboard
