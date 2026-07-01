@@ -45,6 +45,10 @@ export type CreatorMeta = {
   bodyType: string
   identityLock: string
   personality: string
+  carModel: string
+  carColor: string
+  carPlate: string
+  carDescription: string
 }
 
 export const CREATOR_META: Record<Creator, CreatorMeta> = {
@@ -64,7 +68,11 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     backstory: 'Bangalore-based working professional. Sweet-sexy Indian girl-next-door energy. Corporate marketing girlie by day, soft glam ritualist by night. College friends with Kiara, Mia, and Ava — met at Yale.',
     bodyType: 'Slim athletic lean, natural small-to-medium bust, modest fit',
     identityLock: 'Tiny mole on right cheekbone',
-    personality: 'Sweet, warm, softly confident, aspirational-but-relatable. Loves cafés, skincare, slow mornings.'
+    personality: 'Sweet, warm, softly confident, aspirational-but-relatable. Loves cafés, skincare, slow mornings.',
+    carModel: 'Hyundai Creta 2026',
+    carColor: 'Phantom Black',
+    carPlate: 'KA 01 SS 2026',
+    carDescription: 'Sleek black Hyundai Creta 2026 SUV with chrome grille, tinted windows, Karnataka registration plate "KA 01 SS 2026", parked outside Bangalore cafés or her home garage. Face lock the car — same plate always.'
   },
   Kiara: {
     handle: '@kiararai_fit',
@@ -82,7 +90,11 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     backstory: 'Punjab-origin, Mumbai-based working professional. Modern fit-girl bombshell energy. 9-5 grind + 6am gym + all the glam. College friends with Siya, Mia, and Ava. Owner of Blinki (Beagle 🐶).',
     bodyType: 'Athletic hourglass, toned abs, sculpted shoulders, natural confident bust',
     identityLock: 'Tiny mole above right upper lip',
-    personality: 'Bold, confident, motivational, Punjabi sass with Mumbai polish. Cult.fit daily, tea gang, protein shakes.'
+    personality: 'Bold, confident, motivational, Punjabi sass with Mumbai polish. Cult.fit daily, tea gang, protein shakes.',
+    carModel: 'Mini Cooper Countryman',
+    carColor: 'British Racing Green',
+    carPlate: 'MH 04 KR 2024',
+    carDescription: 'British racing green Mini Cooper Countryman with white roof + white bonnet stripes, JCW styling, black alloys, Maharashtra plate "MH 04 KR 2024". Bandra Mumbai apartment garage or Cult.fit parking. Face lock the exact car — same plate always.'
   },
   Mia: {
     handle: '@miafitcartel',
@@ -100,7 +112,11 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     backstory: 'Chicago-based fitness pro. Sun-kissed blonde bombshell energy. 5am Lake Michigan runs + clean eating + strength training. College friends with Siya, Kiara, and Ava — Yale athletics track team.',
     bodyType: 'Fit athletic toned bombshell, defined abs, sculpted shoulders, natural confident bust',
     identityLock: 'Tiny mole on right side of neck (not face)',
-    personality: 'Bold, hyped, no-BS energy. Motivational coach vibes. Believes in real routines, not shortcuts.'
+    personality: 'Bold, hyped, no-BS energy. Motivational coach vibes. Believes in real routines, not shortcuts.',
+    carModel: 'Hummer EV SUV',
+    carColor: 'Interstellar Black',
+    carPlate: 'IL MCARTER',
+    carDescription: 'Massive black Hummer EV SUV (matte black finish), aggressive aftermarket wheels, blackout windows, Illinois vanity plate "MCARTER". Parked at Chicago high-rise gym garage or her West Loop building. Face lock — same plate always.'
   },
   Ava: {
     handle: '@ava.fabfashion',
@@ -118,6 +134,10 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     backstory: 'NYC-based fashion + beauty influencer. Editorial bombshell energy. Silk, satin, Sixth Avenue. Fashion Week regular. College friends with Siya, Kiara, and Mia. Owner of Marshall (Golden Retriever 🐕).',
     bodyType: 'Slim elegant feminine soft curves, natural confident bust, soft snatched waist — NOT extreme fit',
     identityLock: 'Tiny mole on left collarbone (not face)',
-    personality: 'Bold, sultry, sophisticated. Editorial calm. Loves Marshall, luxury shopping, rooftop cocktails.'
+    personality: 'Bold, sultry, sophisticated. Editorial calm. Loves Marshall, luxury shopping, rooftop cocktails.',
+    carModel: 'Ferrari 488 GTB',
+    carColor: 'Rosa Corsa (custom pink)',
+    carPlate: 'AVA MNR',
+    carDescription: 'Custom Rosa Corsa pink Ferrari 488 GTB with beige leather interior + Ferrari yellow calipers, NY vanity plate "AVA MNR". Parked outside NYC luxury apartments, Hamptons driveway, or valet at Cipriani. Face lock — same plate always.'
   }
 }

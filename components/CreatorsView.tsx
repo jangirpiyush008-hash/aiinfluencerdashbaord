@@ -151,6 +151,15 @@ function CreatorDetailModal({ creator, onClose }: { creator: Creator; onClose: (
               </div>
             </div>
 
+            <div className="bg-neutral-950 border border-neutral-800 rounded-xl p-4 space-y-2">
+              <div className="text-xs uppercase tracking-wider text-neutral-500">🚗 Signature Car (face-locked)</div>
+              <div>
+                <div className="text-sm font-semibold text-white">{meta.carColor} {meta.carModel}</div>
+                <div className="text-xs text-neutral-500 mt-1">Plate: <span className="font-mono">{meta.carPlate}</span></div>
+                <div className="text-xs text-neutral-400 mt-2">{meta.carDescription}</div>
+              </div>
+            </div>
+
             <div className="pt-2 space-y-2">
               <div className="text-xs uppercase tracking-wider text-neutral-500">Tech IDs</div>
               <div className="text-xs font-mono space-y-1">
