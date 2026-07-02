@@ -73,6 +73,36 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
     .map((s) => s.trim())
     .filter((s) => s.startsWith('http'))
 
+  const [publishingTT, setPublishingTT] = useState(false)
+  const [publishResultTT, setPublishResultTT] = useState<string | null>(null)
+
+  const publishToTikTok = async () => {
+    const finalVideoUrl = videoUrl || post.videoUrl || ''
+    if (!finalVideoUrl.startsWith('http')) {
+      setPublishResultTT('❌ Need a reel video URL. Paste MP4 URL in the field above (Reel video URL section) or use a video post.')
+      return
+    }
+    setPublishingTT(true)
+    setPublishResultTT(null)
+    try {
+      const res = await fetch('/api/publish-tiktok', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creator: post.creator, videoUrl: finalVideoUrl }),
+      })
+      const json = await res.json()
+      if (json.ok) {
+        setPublishResultTT(`✅ Uploaded to ${post.creator}'s TikTok drafts! Open TikTok app → drafts → add music → publish.`)
+      } else {
+        setPublishResultTT(`❌ ${json.error || 'TikTok upload failed'}`)
+      }
+    } catch (err) {
+      setPublishResultTT(`❌ ${err instanceof Error ? err.message : 'Network error'}`)
+    } finally {
+      setPublishingTT(false)
+    }
+  }
+
   const publishToIG = async () => {
     let kind: 'feed' | 'carousel' | 'reel'
     const payload: {
@@ -365,18 +395,30 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
 
               {/* TikTok button (only for Ava + Mia) */}
               {tiktokAvailable ? (
-                <button
-                  onClick={() => copy(tiktokCopy, 'tt')}
-                  className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
-                >
-                  <span className="flex items-center gap-2">
-                    <span className="text-lg">🎵</span>
-                    <span>Push to TikTok</span>
-                  </span>
-                  <span className="text-xs bg-white/20 px-2 py-1 rounded">
-                    {copied === 'tt' ? '✓ Copied — open TikTok' : 'Copy caption + FYP tags'}
-                  </span>
-                </button>
+                <>
+                  <button
+                    onClick={publishToTikTok}
+                    disabled={publishingTT}
+                    className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-lg">🎵</span>
+                      <span>{publishingTT ? 'Uploading to drafts…' : 'Push to TikTok drafts'}</span>
+                    </span>
+                    <span className="text-xs bg-white/20 px-2 py-1 rounded">{publishingTT ? '⏳' : 'Draft'}</span>
+                  </button>
+                  {publishResultTT && (
+                    <div className="text-xs bg-neutral-950 border border-neutral-800 rounded px-3 py-2 break-all">
+                      {publishResultTT}
+                    </div>
+                  )}
+                  <button
+                    onClick={() => copy(tiktokCopy, 'tt')}
+                    className="w-full text-xs text-neutral-400 hover:text-neutral-200 underline"
+                  >
+                    {copied === 'tt' ? '✓ Copied caption + FYP tags' : 'or copy caption manually'}
+                  </button>
+                </>
               ) : (
                 <div className="text-xs text-neutral-500 bg-neutral-950 px-4 py-2 rounded-lg border border-neutral-800">
                   🚫 TikTok not available for {post.creator} (banned in India)
