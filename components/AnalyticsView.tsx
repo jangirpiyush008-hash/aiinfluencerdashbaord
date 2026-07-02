@@ -2,8 +2,15 @@
 import { CREATOR_META, Creator } from '@/lib/types'
 import { CALENDAR } from '@/lib/calendar'
 import { STORIES } from '@/lib/stories'
+import { useEffect, useState } from 'react'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
+
+type ConnectionStatus = {
+  instagram: { connected: number; total: number; byCreator: Record<Creator, boolean> }
+  tiktok: { connected: number; total: number; byCreator: Record<Creator, boolean> }
+  pinterest: { connected: number; total: number; byCreator: Record<Creator, boolean> }
+}
 
 // Placeholder analytics — will populate from real IG + TikTok APIs once connected
 type Metrics = {
@@ -51,6 +58,14 @@ export default function AnalyticsView() {
     return sum + m.followers.instagram + (m.followers.tiktok || 0)
   }, 0)
 
+  const [status, setStatus] = useState<ConnectionStatus | null>(null)
+  useEffect(() => {
+    fetch('/api/status')
+      .then((r) => r.json())
+      .then(setStatus)
+      .catch(() => setStatus(null))
+  }, [])
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
       <div>
@@ -76,24 +91,24 @@ export default function AnalyticsView() {
             name="Instagram"
             icon="📷"
             gradient="from-pink-500 to-orange-500"
-            creators={CREATORS.length}
-            connected={0}
+            creators={status?.instagram.total ?? CREATORS.length}
+            connected={status?.instagram.connected ?? 0}
           />
           <PlatformCard
             name="TikTok"
             icon="🎵"
             gradient="from-cyan-500 to-pink-500"
-            creators={2}
+            creators={status?.tiktok.total ?? 2}
             note="Ava + Mia only (banned in India)"
-            connected={0}
+            connected={status?.tiktok.connected ?? 0}
           />
           <PlatformCard
             name="Pinterest"
             icon="📌"
             gradient="from-red-600 to-red-500"
-            creators={CREATORS.length}
+            creators={status?.pinterest.total ?? CREATORS.length}
             note="Best for affiliate traffic — pins live 6-24 months"
-            connected={0}
+            connected={status?.pinterest.connected ?? 0}
           />
         </div>
       </div>
