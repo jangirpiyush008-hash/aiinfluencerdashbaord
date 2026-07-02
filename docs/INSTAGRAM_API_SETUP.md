@@ -52,7 +52,11 @@ In the app dashboard:
 6. **Add Product** → **Instagram Graph API** → Set Up
 7. **Add Product** → **Facebook Login** → Set Up
 8. In Facebook Login → Settings:
-   - Valid OAuth redirect URIs: `https://<your-vercel-domain>/api/auth/callback/instagram`
+   - Valid OAuth redirect URIs:
+     ```
+     https://aiinfluencerdashbaord-production.up.railway.app/api/auth/callback
+     http://localhost:3000/api/auth/callback
+     ```
    - Client OAuth Login: **Yes**
    - Web OAuth Login: **Yes**
 
