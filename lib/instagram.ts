@@ -76,8 +76,10 @@ export function buildOAuthLoginUrl(creator: Creator): string {
     client_id: process.env.META_APP_ID || '',
     redirect_uri: process.env.META_REDIRECT_URI || '',
     scope: [
-      'instagram_basic',
-      'instagram_content_publish',
+      'instagram_business_basic',
+      'instagram_business_content_publish',
+      'instagram_business_manage_comments',
+      'instagram_business_manage_insights',
       'pages_show_list',
       'pages_read_engagement',
       'business_management',
