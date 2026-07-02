@@ -16,6 +16,8 @@ export type Post = {
   caption: string
   hashtags: string[]
   imageUrl?: string
+  imageUrls?: string[] // for carousels (2-10 URLs)
+  videoUrl?: string // for reels
   status: PostStatus
   isDubaiArc?: boolean
   isPetPost?: boolean

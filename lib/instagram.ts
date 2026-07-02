@@ -22,54 +22,121 @@ export function getIgUserIdForCreator(creator: Creator): string | null {
   return process.env[CREATOR_IG_USER_ID_KEY[creator]] || null
 }
 
+const GRAPH = 'https://graph.instagram.com/v21.0'
+
+async function createContainer(
+  igUserId: string,
+  token: string,
+  params: Record<string, string>
+): Promise<string> {
+  const res = await fetch(
+    `${GRAPH}/${igUserId}/media?` + new URLSearchParams({ ...params, access_token: token }),
+    { method: 'POST' }
+  )
+  const json = await res.json()
+  if (!res.ok || !json.id) throw new Error(`Container creation failed: ${JSON.stringify(json)}`)
+  return json.id as string
+}
+
+async function publishContainer(igUserId: string, token: string, creationId: string): Promise<string> {
+  const res = await fetch(
+    `${GRAPH}/${igUserId}/media_publish?` +
+      new URLSearchParams({ creation_id: creationId, access_token: token }),
+    { method: 'POST' }
+  )
+  const json = await res.json()
+  if (!res.ok || !json.id) throw new Error(`Publish failed: ${JSON.stringify(json)}`)
+  return json.id as string
+}
+
+async function fetchPermalink(mediaId: string, token: string): Promise<string> {
+  const res = await fetch(`${GRAPH}/${mediaId}?fields=permalink&access_token=${token}`)
+  const json = await res.json()
+  return json.permalink || `https://www.instagram.com/p/${mediaId}`
+}
+
+// Poll a container until it's ready (needed for videos + carousel children)
+async function waitForContainerReady(containerId: string, token: string, maxAttempts = 30): Promise<void> {
+  for (let i = 0; i < maxAttempts; i++) {
+    const res = await fetch(`${GRAPH}/${containerId}?fields=status_code&access_token=${token}`)
+    const json = await res.json()
+    if (json.status_code === 'FINISHED') return
+    if (json.status_code === 'ERROR' || json.status_code === 'EXPIRED') {
+      throw new Error(`Container ${containerId} failed: ${JSON.stringify(json)}`)
+    }
+    await new Promise((r) => setTimeout(r, 2000))
+  }
+  throw new Error(`Container ${containerId} not ready after ${maxAttempts * 2}s`)
+}
+
+export type PublishKind = 'feed' | 'story' | 'carousel' | 'reel'
+
 export async function publishToInstagram(params: {
   creator: Creator
-  imageUrl: string
-  caption: string
+  kind: PublishKind
+  caption?: string
+  imageUrl?: string
+  imageUrls?: string[]
+  videoUrl?: string
 }): Promise<{ postId: string; permalink: string }> {
-  const { creator, imageUrl, caption } = params
+  const { creator, kind, caption = '', imageUrl, imageUrls, videoUrl } = params
   const token = getTokenForCreator(creator)
   const igUserId = getIgUserIdForCreator(creator)
 
   if (!token) throw new Error(`No Instagram token stored for ${creator}. Connect the account first at /connect.`)
   if (!igUserId) throw new Error(`No Instagram user ID stored for ${creator}. Reconnect the account.`)
 
-  // Instagram Business Login flow uses graph.instagram.com
-  // Step 1: create media container
-  const containerRes = await fetch(
-    `https://graph.instagram.com/v21.0/${igUserId}/media?` +
-      new URLSearchParams({
-        image_url: imageUrl,
-        caption,
-        access_token: token,
-      }),
-    { method: 'POST' }
-  )
-  const containerJson = await containerRes.json()
-  if (!containerRes.ok || !containerJson.id) {
-    throw new Error(`Container creation failed: ${JSON.stringify(containerJson)}`)
+  let creationId: string
+
+  if (kind === 'feed') {
+    if (!imageUrl) throw new Error('feed post needs imageUrl')
+    creationId = await createContainer(igUserId, token, { image_url: imageUrl, caption })
+  } else if (kind === 'story') {
+    if (!imageUrl && !videoUrl) throw new Error('story needs imageUrl or videoUrl')
+    if (videoUrl) {
+      creationId = await createContainer(igUserId, token, {
+        media_type: 'STORIES',
+        video_url: videoUrl,
+      })
+      await waitForContainerReady(creationId, token)
+    } else {
+      creationId = await createContainer(igUserId, token, {
+        media_type: 'STORIES',
+        image_url: imageUrl!,
+      })
+    }
+    // stories do not accept caption
+  } else if (kind === 'carousel') {
+    if (!imageUrls || imageUrls.length < 2 || imageUrls.length > 10) {
+      throw new Error('carousel needs 2-10 image URLs')
+    }
+    // Create child containers (marked is_carousel_item)
+    const childIds = await Promise.all(
+      imageUrls.map((url) =>
+        createContainer(igUserId, token, { image_url: url, is_carousel_item: 'true' })
+      )
+    )
+    // Create parent carousel container
+    creationId = await createContainer(igUserId, token, {
+      media_type: 'CAROUSEL',
+      children: childIds.join(','),
+      caption,
+    })
+  } else if (kind === 'reel') {
+    if (!videoUrl) throw new Error('reel needs videoUrl')
+    creationId = await createContainer(igUserId, token, {
+      media_type: 'REELS',
+      video_url: videoUrl,
+      caption,
+    })
+    await waitForContainerReady(creationId, token)
+  } else {
+    throw new Error(`Unknown kind: ${kind}`)
   }
-  const creationId = containerJson.id as string
 
-  // Step 2: publish
-  const publishRes = await fetch(
-    `https://graph.instagram.com/v21.0/${igUserId}/media_publish?` +
-      new URLSearchParams({ creation_id: creationId, access_token: token }),
-    { method: 'POST' }
-  )
-  const publishJson = await publishRes.json()
-  if (!publishRes.ok || !publishJson.id) {
-    throw new Error(`Publish failed: ${JSON.stringify(publishJson)}`)
-  }
-  const mediaId = publishJson.id as string
-
-  // Step 3: fetch permalink
-  const permalinkRes = await fetch(
-    `https://graph.instagram.com/v21.0/${mediaId}?fields=permalink&access_token=${token}`
-  )
-  const permalinkJson = await permalinkRes.json()
-
-  return { postId: mediaId, permalink: permalinkJson.permalink || `https://www.instagram.com/p/${mediaId}` }
+  const mediaId = await publishContainer(igUserId, token, creationId)
+  const permalink = await fetchPermalink(mediaId, token)
+  return { postId: mediaId, permalink }
 }
 
 export function buildOAuthLoginUrl(creator: Creator): string {

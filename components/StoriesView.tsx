@@ -124,12 +124,45 @@ function StoryCard({ story, onClick }: { story: Story; onClick: () => void }) {
 
 function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
   const [copied, setCopied] = useState(false)
+  const [publishing, setPublishing] = useState(false)
+  const [publishResult, setPublishResult] = useState<string | null>(null)
   const meta = CREATOR_META[story.creator]
 
   const copy = () => {
     navigator.clipboard.writeText(story.prompt)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
+  }
+
+  const publishToIG = async () => {
+    if (!story.imageUrl) {
+      setPublishResult('❌ No image URL — generate the story first')
+      return
+    }
+    setPublishing(true)
+    setPublishResult(null)
+    try {
+      const res = await fetch('/api/publish-instagram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          creator: story.creator,
+          kind: 'story',
+          imageUrl: story.imageUrl,
+        }),
+      })
+      const json = await res.json()
+      if (json.ok) {
+        setPublishResult(`✅ Story posted! View: ${json.permalink}`)
+        window.open(json.permalink, '_blank')
+      } else {
+        setPublishResult(`❌ ${json.error || 'Publish failed'}`)
+      }
+    } catch (err) {
+      setPublishResult(`❌ ${err instanceof Error ? err.message : 'Network error'}`)
+    } finally {
+      setPublishing(false)
+    }
   }
 
   return (
@@ -231,19 +264,32 @@ function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
               </a>
             )}
 
-            {/* PUSH TO PLATFORM — stories only work on Instagram (TikTok has no stories) */}
+            {/* AUTO-PUBLISH TO INSTAGRAM STORY */}
             <button
-              onClick={() => {
-                navigator.clipboard.writeText(story.overlayText)
-                alert('Overlay text copied! Open IG Story → add text → paste')
-              }}
-              className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-pink-500 to-orange-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+              onClick={publishToIG}
+              disabled={publishing}
+              className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-pink-500 to-orange-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
             >
               <span className="flex items-center gap-2">
                 <span className="text-lg">📷</span>
-                <span>Push to Instagram Story</span>
+                <span>{publishing ? 'Publishing…' : 'Auto-publish to Instagram Story'}</span>
               </span>
-              <span className="text-xs bg-white/20 px-2 py-1 rounded">Copy overlay text</span>
+              <span className="text-xs bg-white/20 px-2 py-1 rounded">{publishing ? '⏳' : 'Live'}</span>
+            </button>
+            {publishResult && (
+              <div className="text-xs bg-neutral-950 border border-neutral-800 rounded px-3 py-2 break-all">
+                {publishResult}
+              </div>
+            )}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(story.overlayText)
+                setCopied(true)
+                setTimeout(() => setCopied(false), 1500)
+              }}
+              className="w-full text-xs text-neutral-400 hover:text-neutral-200 underline"
+            >
+              {copied ? '✓ Overlay text copied' : 'or copy overlay text manually'}
             </button>
             <div className="text-[10px] text-neutral-500 text-center">
               Stories only exist on Instagram (TikTok doesn't have stories)

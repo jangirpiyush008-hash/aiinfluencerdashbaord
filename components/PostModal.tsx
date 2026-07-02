@@ -48,25 +48,55 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   }
 
   const publishToIG = async () => {
-    if (!post.imageUrl) {
-      setPublishResult('❌ No image URL — generate the post first')
-      return
+    // Determine content kind + payload from post format
+    let kind: 'feed' | 'carousel' | 'reel'
+    const payload: {
+      creator: string
+      kind: string
+      caption: string
+      imageUrl?: string
+      imageUrls?: string[]
+      videoUrl?: string
+    } = { creator: post.creator, kind: 'feed', caption: igCopy }
+
+    if (post.format === 'video') {
+      kind = 'reel'
+      if (!post.videoUrl) {
+        setPublishResult('❌ No videoUrl — generate the reel first')
+        return
+      }
+      payload.kind = 'reel'
+      payload.videoUrl = post.videoUrl
+    } else if (post.format === 'carousel') {
+      kind = 'carousel'
+      const urls = post.imageUrls?.length ? post.imageUrls : post.imageUrl ? [post.imageUrl] : []
+      if (urls.length < 2) {
+        setPublishResult('❌ Carousel needs 2+ image URLs. Add them to imageUrls[] in calendar.ts')
+        return
+      }
+      payload.kind = 'carousel'
+      payload.imageUrls = urls
+    } else {
+      kind = 'feed'
+      if (!post.imageUrl) {
+        setPublishResult('❌ No imageUrl — generate the post first')
+        return
+      }
+      payload.kind = 'feed'
+      payload.imageUrl = post.imageUrl
     }
+
     setPublishing(true)
     setPublishResult(null)
     try {
       const res = await fetch('/api/publish-instagram', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          creator: post.creator,
-          imageUrl: post.imageUrl,
-          caption: igCopy,
-        }),
+        body: JSON.stringify(payload),
       })
       const json = await res.json()
       if (json.ok) {
-        setPublishResult(`✅ Published! View: ${json.permalink}`)
+        setPublishResult(`✅ Published (${kind})! View: ${json.permalink}`)
         window.open(json.permalink, '_blank')
       } else {
         setPublishResult(`❌ ${json.error || 'Publish failed'}`)
