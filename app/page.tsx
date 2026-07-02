@@ -82,26 +82,14 @@ export default function Home() {
             ))}
           </div>
 
-          {/* TAB SWITCHER — horizontal scroll on mobile */}
-          <div className="flex gap-1 mt-3 sm:mt-5 border-b border-neutral-800 -mb-3 sm:-mb-5 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
-            <TabButton active={tab === 'calendar'} onClick={() => setTab('calendar')}>
-              📅 <span className="hidden sm:inline">Calendar</span>
-            </TabButton>
-            <TabButton active={tab === 'stories'} onClick={() => setTab('stories')}>
-              📱 <span className="hidden sm:inline">Stories</span>
-            </TabButton>
-            <TabButton active={tab === 'creators'} onClick={() => setTab('creators')}>
-              👑 <span className="hidden sm:inline">Creators</span>
-            </TabButton>
-            <TabButton active={tab === 'story'} onClick={() => setTab('story')}>
-              📖 <span className="hidden sm:inline">Story</span>
-            </TabButton>
-            <TabButton active={tab === 'videos'} onClick={() => setTab('videos')}>
-              🎥 <span className="hidden sm:inline">Videos</span>
-            </TabButton>
-            <TabButton active={tab === 'analytics'} onClick={() => setTab('analytics')}>
-              📊 <span className="hidden sm:inline">Analytics</span>
-            </TabButton>
+          {/* TAB SWITCHER — icon + label always, horizontal scroll on mobile */}
+          <div className="flex gap-1.5 mt-3 sm:mt-5 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
+            <TabButton active={tab === 'calendar'} onClick={() => setTab('calendar')} icon="📅" label="Calendar" />
+            <TabButton active={tab === 'stories'} onClick={() => setTab('stories')} icon="📱" label="Stories" />
+            <TabButton active={tab === 'creators'} onClick={() => setTab('creators')} icon="👑" label="Creators" />
+            <TabButton active={tab === 'story'} onClick={() => setTab('story')} icon="📖" label="Story" />
+            <TabButton active={tab === 'videos'} onClick={() => setTab('videos')} icon="🎥" label="Videos" />
+            <TabButton active={tab === 'analytics'} onClick={() => setTab('analytics')} icon="📊" label="Stats" />
           </div>
         </div>
       </header>
@@ -183,17 +171,18 @@ export default function Home() {
   )
 }
 
-function TabButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+function TabButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: string; label: string }) {
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-3 text-sm font-semibold transition-all border-b-2 ${
+      className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-full transition-all flex items-center gap-1.5 shrink-0 ${
         active
-          ? 'text-white border-white'
-          : 'text-neutral-500 hover:text-neutral-300 border-transparent'
+          ? 'bg-white text-neutral-900 shadow-lg shadow-white/10'
+          : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 border border-neutral-800'
       }`}
     >
-      {children}
+      <span className="text-base">{icon}</span>
+      <span>{label}</span>
     </button>
   )
 }
@@ -212,7 +201,7 @@ function FilterChip({
   return (
     <button
       onClick={onClick}
-      className="text-xs px-3 py-1.5 rounded-full border transition-all"
+      className="text-xs px-3 py-2 rounded-full border transition-all shrink-0 whitespace-nowrap font-medium"
       style={{
         background: active ? (color ? `${color}22` : 'rgb(38 38 38)') : 'transparent',
         borderColor: active ? (color || 'rgb(64 64 64)') : 'rgb(38 38 38)',
