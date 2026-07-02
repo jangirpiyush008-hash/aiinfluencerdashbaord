@@ -1,15 +1,47 @@
 'use client'
 import { Post, CREATOR_META } from '@/lib/types'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function PostModal({ post, onClose }: { post: Post | null; onClose: () => void }) {
   const [copied, setCopied] = useState<string | null>(null)
+  const [productName, setProductName] = useState(post?.productName || '')
+  const [affiliateLink, setAffiliateLink] = useState(post?.affiliateLink || '')
+
+  useEffect(() => {
+    if (post) {
+      setProductName(post.productName || '')
+      setAffiliateLink(post.affiliateLink || '')
+      // Persist to localStorage per post so it survives modal close
+      const key = `post-${post.id}-link`
+      const saved = localStorage.getItem(key)
+      if (saved) {
+        try {
+          const data = JSON.parse(saved)
+          setProductName(data.productName || post.productName || '')
+          setAffiliateLink(data.affiliateLink || post.affiliateLink || '')
+        } catch {}
+      }
+    }
+  }, [post?.id])
+
   if (!post) return null
   const meta = CREATOR_META[post.creator]
 
-  const igCopy = `${post.caption}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
-  const tiktokCopy = `${post.caption}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou`
-  const pinterestCopy = `${post.concept}\n\n${post.caption}`
+  const linkSuffix = affiliateLink
+    ? productName
+      ? `\n\n🛒 ${productName}: link in bio 👆`
+      : `\n\n🛒 link in bio 👆`
+    : ''
+
+  const igCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
+  const tiktokCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou`
+  const pinterestTitle = productName || post.concept
+  const pinterestDescription = post.caption
+  const pinterestCopy = `TITLE: ${pinterestTitle}\n\nDESCRIPTION: ${pinterestDescription}\n\nDESTINATION LINK: ${affiliateLink || '(none — leave blank on Pinterest)'}\n\nHASHTAGS: ${post.hashtags.map(t => '#' + t).join(' ')}`
+
+  const saveLink = () => {
+    localStorage.setItem(`post-${post.id}-link`, JSON.stringify({ productName, affiliateLink }))
+  }
   const tiktokAvailable = meta.tiktokAvailable
   const pinterestAvailable = meta.pinterestAvailable
 
@@ -99,6 +131,33 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               </div>
               <div className="text-xs text-neutral-400 bg-neutral-950 p-3 rounded-lg border border-neutral-800 max-h-32 overflow-y-auto whitespace-pre-wrap">
                 {post.prompt}
+              </div>
+            </div>
+
+            {/* AFFILIATE LINK INPUT */}
+            <div className="border-2 border-purple-500/40 bg-purple-500/5 rounded-xl p-4 space-y-3">
+              <div className="text-xs uppercase tracking-wider text-purple-300 font-semibold">🛒 Affiliate link (optional)</div>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="Product name (e.g. Dymatize Elite Whey)"
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                  onBlur={saveLink}
+                  className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
+                />
+                <input
+                  type="url"
+                  placeholder="Affiliate URL (https://amazon.com/... or bit.ly/...)"
+                  value={affiliateLink}
+                  onChange={(e) => setAffiliateLink(e.target.value)}
+                  onBlur={saveLink}
+                  className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
+                />
+              </div>
+              <div className="text-[11px] text-neutral-400 leading-relaxed">
+                💡 Pinterest attaches this URL directly to the pin (clickable).<br/>
+                💡 Instagram + TikTok add "link in bio 👆" to caption. Update your Linktree/Beacons bio link separately.
               </div>
             </div>
 

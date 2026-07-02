@@ -28,6 +28,8 @@ export type Post = {
   storyArcId?: string
   higgsfieldJobId?: string
   generatedAt?: string
+  affiliateLink?: string
+  productName?: string
 }
 
 export type CreatorMeta = {
