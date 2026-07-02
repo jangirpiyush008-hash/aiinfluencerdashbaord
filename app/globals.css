@@ -4,6 +4,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::-webkit-scrollbar {
@@ -13,3 +14,19 @@ body {
 ::-webkit-scrollbar-track { background: rgb(23 23 23); }
 ::-webkit-scrollbar-thumb { background: rgb(64 64 64); border-radius: 5px; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(82 82 82); }
+
+/* Hide scrollbar for horizontal scroll containers */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Prevent horizontal page scroll on mobile */
+html, body { overflow-x: hidden; }
+
+/* Touch-friendly minimum tap target on mobile */
+@media (max-width: 640px) {
+  button, a { min-height: 40px; }
+  input, textarea, select { font-size: 16px !important; } /* prevent iOS zoom */
+}
+
+/* Safe area padding for iPhone notch */
+body { padding-bottom: env(safe-area-inset-bottom); }

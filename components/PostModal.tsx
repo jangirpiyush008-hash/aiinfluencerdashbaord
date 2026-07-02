@@ -19,11 +19,11 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm p-0 sm:p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-4xl w-full my-8 overflow-hidden"
+        className="bg-neutral-900 border border-neutral-800 sm:rounded-2xl max-w-4xl w-full sm:my-8 overflow-hidden min-h-screen sm:min-h-0"
         style={{ borderTopColor: meta.color, borderTopWidth: 4 }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -54,7 +54,7 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               <div className="absolute bottom-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold">🎥 Product Video</div>
             )}
           </div>
-          <div className="p-6 space-y-5 overflow-y-auto max-h-[80vh]">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto sm:max-h-[80vh]">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="text-xs font-mono text-neutral-500 mb-1">POST #{post.id}/99</div>
