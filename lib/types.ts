@@ -57,6 +57,9 @@ export type CreatorMeta = {
   tiktokHandle?: string
   tiktokUrl?: string
   tiktokAvailable: boolean
+  pinterestHandle?: string
+  pinterestUrl?: string
+  pinterestAvailable: boolean
 }
 
 export const CREATOR_META: Record<Creator, CreatorMeta> = {
@@ -91,7 +94,10 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
       'Blush pink midi dress + Amrapali jhumkas (date night)',
       'Ivory anarkali + kolhapuri wedges (Sunday brunch)'
     ],
-    tiktokAvailable: false
+    tiktokAvailable: false,
+    pinterestHandle: '__PLACEHOLDER__',
+    pinterestUrl: '__PLACEHOLDER__',
+    pinterestAvailable: true
   },
   Kiara: {
     handle: '@kiararai_fit',
@@ -124,7 +130,10 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
       'Punjabi salwar-kameez + jhumkas (family visit)',
       'Deep-V black bikini + gold body chain + sarong (Goa beach)'
     ],
-    tiktokAvailable: false
+    tiktokAvailable: false,
+    pinterestHandle: '__PLACEHOLDER__',
+    pinterestUrl: '__PLACEHOLDER__',
+    pinterestAvailable: true
   },
   Mia: {
     handle: '@miafitcartel',
@@ -159,7 +168,10 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     ],
     tiktokHandle: '@miafitcartel',
     tiktokUrl: 'https://www.tiktok.com/@miafitcartel',
-    tiktokAvailable: true
+    tiktokAvailable: true,
+    pinterestHandle: '__PLACEHOLDER__',
+    pinterestUrl: '__PLACEHOLDER__',
+    pinterestAvailable: true
   },
   Ava: {
     handle: '@ava.fabfashion',
@@ -194,6 +206,9 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     ],
     tiktokHandle: '@ava.fabfashion',
     tiktokUrl: 'https://www.tiktok.com/@ava.fabfashion',
-    tiktokAvailable: true
+    tiktokAvailable: true,
+    pinterestHandle: '__PLACEHOLDER__',
+    pinterestUrl: '__PLACEHOLDER__',
+    pinterestAvailable: true
   }
 }

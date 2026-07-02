@@ -58,6 +58,11 @@ export default function CreatorsView() {
                     🎵 {meta.tiktokHandle} ↗
                   </a>
                 )}
+                {meta.pinterestAvailable && (
+                  <span className="text-xs text-neutral-500 flex items-center gap-1">
+                    📌 Pinterest (setup pending)
+                  </span>
+                )}
                 <div className="flex gap-3 text-xs text-neutral-500 pt-1">
                   <span>{postCount} posts</span>
                   <span>·</span>

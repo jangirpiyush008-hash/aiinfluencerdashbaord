@@ -71,7 +71,7 @@ export default function AnalyticsView() {
       {/* PLATFORM SPLIT */}
       <div>
         <h3 className="text-xl font-bold mb-4">By Platform</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <PlatformCard
             name="Instagram"
             icon="📷"
@@ -85,6 +85,14 @@ export default function AnalyticsView() {
             gradient="from-cyan-500 to-pink-500"
             creators={2}
             note="Ava + Mia only (banned in India)"
+            connected={0}
+          />
+          <PlatformCard
+            name="Pinterest"
+            icon="📌"
+            gradient="from-red-600 to-red-500"
+            creators={CREATORS.length}
+            note="Best for affiliate traffic — pins live 6-24 months"
             connected={0}
           />
         </div>

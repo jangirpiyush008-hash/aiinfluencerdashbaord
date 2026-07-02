@@ -9,7 +9,9 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
 
   const igCopy = `${post.caption}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
   const tiktokCopy = `${post.caption}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou`
+  const pinterestCopy = `${post.concept}\n\n${post.caption}`
   const tiktokAvailable = meta.tiktokAvailable
+  const pinterestAvailable = meta.pinterestAvailable
 
   const copy = (text: string, label: string) => {
     navigator.clipboard.writeText(text)
@@ -171,8 +173,24 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
                 </div>
               )}
 
+              {/* Pinterest button (all 4 creators) */}
+              {pinterestAvailable && (
+                <button
+                  onClick={() => copy(pinterestCopy, 'pin')}
+                  className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-red-600 to-red-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">📌</span>
+                    <span>Push to Pinterest</span>
+                  </span>
+                  <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                    {copied === 'pin' ? '✓ Copied — open Pinterest' : 'Copy title + description'}
+                  </span>
+                </button>
+              )}
+
               <div className="text-[10px] text-neutral-500 text-center">
-                Auto-publish via API coming soon (after Meta + TikTok approval)
+                Auto-publish via API coming soon (after Meta + TikTok + Pinterest approval)
               </div>
             </div>
 
