@@ -12,9 +12,9 @@ export async function GET(req: NextRequest) {
   }
   if (!code) return html('<h1>Missing code param</h1>')
 
-  const appId = process.env.IG_APP_ID
-  const appSecret = process.env.IG_APP_SECRET
-  const redirectUri = process.env.IG_REDIRECT_URI
+  const appId = process.env.IG_APP_ID?.trim()
+  const appSecret = process.env.IG_APP_SECRET?.trim()
+  const redirectUri = process.env.IG_REDIRECT_URI?.trim().replace(/\/$/, '')
 
   if (!appId || !appSecret || !redirectUri) {
     return html('<h1>Server misconfigured</h1><p>Missing IG_APP_ID / IG_APP_SECRET / IG_REDIRECT_URI env vars.</p>')
@@ -34,7 +34,13 @@ export async function GET(req: NextRequest) {
   })
   const tokenJson = await tokenRes.json()
   if (!tokenRes.ok || !tokenJson.access_token) {
-    return html(`<h1>Token exchange failed</h1><pre>${escape(JSON.stringify(tokenJson, null, 2))}</pre>`)
+    return html(`<h1>Token exchange failed</h1>
+      <p><b>redirect_uri sent:</b></p>
+      <code style="display:block;background:#000;padding:8px;border-radius:6px;word-break:break-all">${escape(redirectUri)}</code>
+      <p style="margin-top:12px"><b>Meta's response:</b></p>
+      <pre style="background:#111;padding:12px;border-radius:6px;overflow-x:auto">${escape(JSON.stringify(tokenJson, null, 2))}</pre>
+      <p style="margin-top:12px;color:#fca">Confirm the redirect_uri above EXACTLY matches what's in Meta app dashboard → Use Cases → Manage messaging & content on Instagram → Business login settings → Valid OAuth Redirect URIs.</p>
+    `)
   }
   const shortToken = tokenJson.access_token as string
   const userId = tokenJson.user_id as string

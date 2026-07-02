@@ -73,9 +73,11 @@ export async function publishToInstagram(params: {
 }
 
 export function buildOAuthLoginUrl(creator: Creator): string {
+  const clientId = (process.env.IG_APP_ID || '').trim()
+  const redirectUri = (process.env.IG_REDIRECT_URI || '').trim().replace(/\/$/, '')
   const params = new URLSearchParams({
-    client_id: process.env.IG_APP_ID || '',
-    redirect_uri: process.env.IG_REDIRECT_URI || '',
+    client_id: clientId,
+    redirect_uri: redirectUri,
     scope: [
       'instagram_business_basic',
       'instagram_business_content_publish',
