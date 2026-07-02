@@ -8,6 +8,8 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   const [affiliateLink, setAffiliateLink] = useState(post?.affiliateLink || '')
   const [publishing, setPublishing] = useState(false)
   const [publishResult, setPublishResult] = useState<string | null>(null)
+  const [slideUrlsText, setSlideUrlsText] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
 
   useEffect(() => {
     if (post) {
@@ -23,8 +25,26 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
           setAffiliateLink(data.affiliateLink || post.affiliateLink || '')
         } catch {}
       }
+      // Load saved slide URLs (for carousels) and video URL (for reels)
+      const mediaKey = `post-${post.id}-media`
+      const savedMedia = localStorage.getItem(mediaKey)
+      if (savedMedia) {
+        try {
+          const m = JSON.parse(savedMedia)
+          setSlideUrlsText((m.imageUrls || post.imageUrls || []).join('\n') || (post.imageUrl && post.format === 'carousel' ? post.imageUrl : ''))
+          setVideoUrl(m.videoUrl || post.videoUrl || '')
+        } catch {}
+      } else {
+        setSlideUrlsText((post.imageUrls || []).join('\n') || (post.imageUrl && post.format === 'carousel' ? post.imageUrl : ''))
+        setVideoUrl(post.videoUrl || '')
+      }
     }
   }, [post?.id])
+
+  const saveMedia = (imageUrls: string[], videoUrl: string) => {
+    if (!post) return
+    localStorage.setItem(`post-${post.id}-media`, JSON.stringify({ imageUrls, videoUrl }))
+  }
 
   if (!post) return null
   const meta = CREATOR_META[post.creator]
@@ -47,8 +67,13 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
     setTimeout(() => setCopied(null), 1500)
   }
 
+  // Parse pasted slide URLs (one per line, ignore blanks)
+  const parsedSlideUrls = slideUrlsText
+    .split('\n')
+    .map((s) => s.trim())
+    .filter((s) => s.startsWith('http'))
+
   const publishToIG = async () => {
-    // Determine content kind + payload from post format
     let kind: 'feed' | 'carousel' | 'reel'
     const payload: {
       creator: string
@@ -61,30 +86,45 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
 
     if (post.format === 'video') {
       kind = 'reel'
-      if (!post.videoUrl) {
-        setPublishResult('❌ No videoUrl — generate the reel first')
+      const finalVideoUrl = videoUrl || post.videoUrl || ''
+      if (!finalVideoUrl.startsWith('http')) {
+        setPublishResult('❌ Paste the reel video URL in the field below first')
         return
       }
       payload.kind = 'reel'
-      payload.videoUrl = post.videoUrl
+      payload.videoUrl = finalVideoUrl
     } else if (post.format === 'carousel') {
       kind = 'carousel'
-      const urls = post.imageUrls?.length ? post.imageUrls : post.imageUrl ? [post.imageUrl] : []
+      const urls = parsedSlideUrls.length
+        ? parsedSlideUrls
+        : post.imageUrls?.length
+        ? post.imageUrls
+        : post.imageUrl
+        ? [post.imageUrl]
+        : []
       if (urls.length < 2) {
-        setPublishResult('❌ Carousel needs 2+ image URLs. Add them to imageUrls[] in calendar.ts')
+        setPublishResult(`❌ Carousel needs 2-10 slide URLs. Paste them below (one per line). Currently: ${urls.length}`)
+        return
+      }
+      if (urls.length > 10) {
+        setPublishResult(`❌ Instagram allows max 10 slides per carousel. Currently: ${urls.length}`)
         return
       }
       payload.kind = 'carousel'
       payload.imageUrls = urls
     } else {
       kind = 'feed'
-      if (!post.imageUrl) {
-        setPublishResult('❌ No imageUrl — generate the post first')
+      const finalImageUrl = post.imageUrl || parsedSlideUrls[0] || ''
+      if (!finalImageUrl.startsWith('http')) {
+        setPublishResult('❌ No imageUrl — generate the post first (or paste URL below)')
         return
       }
       payload.kind = 'feed'
-      payload.imageUrl = post.imageUrl
+      payload.imageUrl = finalImageUrl
     }
+
+    // Persist media URLs so they survive reloads
+    saveMedia(parsedSlideUrls, videoUrl)
 
     setPublishing(true)
     setPublishResult(null)
@@ -240,6 +280,57 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
                 </span>
                 <span className="text-xs bg-white/10 px-2 py-1 rounded">Save to device</span>
               </a>
+            )}
+
+            {/* MEDIA URLS — carousel slides or reel video */}
+            {post.format === 'carousel' && (
+              <div className="space-y-2 bg-neutral-950 border border-neutral-800 rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs uppercase tracking-wider text-neutral-400 font-semibold">
+                    📚 Carousel slide URLs
+                  </div>
+                  <div className={`text-xs px-2 py-0.5 rounded ${parsedSlideUrls.length >= 2 && parsedSlideUrls.length <= 10 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-orange-500/20 text-orange-300'}`}>
+                    {parsedSlideUrls.length}/{post.slides || 10} slides
+                  </div>
+                </div>
+                <textarea
+                  value={slideUrlsText}
+                  onChange={(e) => setSlideUrlsText(e.target.value)}
+                  onBlur={() => saveMedia(parsedSlideUrls, videoUrl)}
+                  placeholder={`Paste one URL per line — in slide order (A, B, C…)\nhttps://d8j0.../slide-A.png\nhttps://d8j0.../slide-B.png\nhttps://d8j0.../slide-C.png`}
+                  className="w-full bg-black border border-neutral-800 rounded p-2 text-xs font-mono text-neutral-200 min-h-[100px] resize-y"
+                />
+                {parsedSlideUrls.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {parsedSlideUrls.slice(0, 10).map((url, i) => (
+                      <div key={i} className="flex-shrink-0 relative">
+                        <img src={url} alt={`Slide ${i + 1}`} className="h-16 w-16 object-cover rounded border border-neutral-700" onError={(e) => (e.currentTarget.style.opacity = '0.3')} />
+                        <div className="absolute top-0 left-0 bg-black/70 text-white text-[10px] px-1 rounded-br">{i + 1}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="text-[10px] text-neutral-500">
+                  Instagram needs 2-10 slides in order. URLs persist across refreshes.
+                </div>
+              </div>
+            )}
+
+            {post.format === 'video' && (
+              <div className="space-y-2 bg-neutral-950 border border-neutral-800 rounded-xl p-3">
+                <div className="text-xs uppercase tracking-wider text-neutral-400 font-semibold">🎥 Reel video URL</div>
+                <input
+                  type="url"
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
+                  onBlur={() => saveMedia(parsedSlideUrls, videoUrl)}
+                  placeholder="https://d8j0.../reel.mp4"
+                  className="w-full bg-black border border-neutral-800 rounded p-2 text-xs font-mono text-neutral-200"
+                />
+                <div className="text-[10px] text-neutral-500">
+                  MP4 URL from Higgsfield. Video processing takes ~20-60 sec after publish click.
+                </div>
+              </div>
             )}
 
             {/* ONE-CLICK PLATFORM COPY (simplified) */}
