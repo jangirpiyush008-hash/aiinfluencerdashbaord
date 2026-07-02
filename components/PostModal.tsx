@@ -27,17 +27,11 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   if (!post) return null
   const meta = CREATOR_META[post.creator]
 
-  const linkSuffix = affiliateLink
-    ? productName
-      ? `\n\n🛒 ${productName}: link in bio 👆`
-      : `\n\n🛒 link in bio 👆`
-    : ''
+  const linkSuffix = affiliateLink ? `\n\n🛒 link in bio 👆` : ''
 
   const igCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
   const tiktokCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou`
-  const pinterestTitle = productName || post.concept
-  const pinterestDescription = post.caption
-  const pinterestCopy = `TITLE: ${pinterestTitle}\n\nDESCRIPTION: ${pinterestDescription}\n\nDESTINATION LINK: ${affiliateLink || '(none — leave blank on Pinterest)'}\n\nHASHTAGS: ${post.hashtags.map(t => '#' + t).join(' ')}`
+  const pinterestCopy = `TITLE: ${post.concept}\n\nDESCRIPTION: ${post.caption}\n\nDESTINATION LINK: ${affiliateLink || '(none — leave blank on Pinterest)'}\n\nHASHTAGS: ${post.hashtags.map(t => '#' + t).join(' ')}`
 
   const saveLink = () => {
     localStorage.setItem(`post-${post.id}-link`, JSON.stringify({ productName, affiliateLink }))
@@ -134,30 +128,21 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               </div>
             </div>
 
-            {/* AFFILIATE LINK INPUT */}
+            {/* AFFILIATE LINK INPUT — single URL field */}
             <div className="border-2 border-purple-500/40 bg-purple-500/5 rounded-xl p-4 space-y-3">
-              <div className="text-xs uppercase tracking-wider text-purple-300 font-semibold">🛒 Affiliate link (optional)</div>
-              <div className="space-y-2">
-                <input
-                  type="text"
-                  placeholder="Product name (e.g. Dymatize Elite Whey)"
-                  value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
-                  onBlur={saveLink}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
-                />
-                <input
-                  type="url"
-                  placeholder="Affiliate URL (https://amazon.com/... or bit.ly/...)"
-                  value={affiliateLink}
-                  onChange={(e) => setAffiliateLink(e.target.value)}
-                  onBlur={saveLink}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
-                />
-              </div>
-              <div className="text-[11px] text-neutral-400 leading-relaxed">
-                💡 Pinterest attaches this URL directly to the pin (clickable).<br/>
-                💡 Instagram + TikTok add "link in bio 👆" to caption. Update your Linktree/Beacons bio link separately.
+              <div className="text-xs uppercase tracking-wider text-purple-300 font-semibold">🔗 Link (optional)</div>
+              <input
+                type="url"
+                placeholder="https://amazon.com/... or affiliate short link"
+                value={affiliateLink}
+                onChange={(e) => setAffiliateLink(e.target.value)}
+                onBlur={saveLink}
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500"
+              />
+              <div className="text-[11px] text-neutral-400 leading-relaxed space-y-0.5">
+                <div>📌 <span className="text-red-300">Pinterest:</span> auto-attached as clickable pin destination</div>
+                <div>📷 <span className="text-pink-300">Instagram:</span> auto-updates Linktree (bio link) + adds "link in bio" to caption</div>
+                <div>🎵 <span className="text-cyan-300">TikTok:</span> auto-updates bio link now · in-video link unlocks at 1000 followers</div>
               </div>
             </div>
 
