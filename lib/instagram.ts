@@ -34,9 +34,10 @@ export async function publishToInstagram(params: {
   if (!token) throw new Error(`No Instagram token stored for ${creator}. Connect the account first at /connect.`)
   if (!igUserId) throw new Error(`No Instagram user ID stored for ${creator}. Reconnect the account.`)
 
+  // Instagram Business Login flow uses graph.instagram.com
   // Step 1: create media container
   const containerRes = await fetch(
-    `https://graph.facebook.com/v21.0/${igUserId}/media?` +
+    `https://graph.instagram.com/v21.0/${igUserId}/media?` +
       new URLSearchParams({
         image_url: imageUrl,
         caption,
@@ -52,7 +53,7 @@ export async function publishToInstagram(params: {
 
   // Step 2: publish
   const publishRes = await fetch(
-    `https://graph.facebook.com/v21.0/${igUserId}/media_publish?` +
+    `https://graph.instagram.com/v21.0/${igUserId}/media_publish?` +
       new URLSearchParams({ creation_id: creationId, access_token: token }),
     { method: 'POST' }
   )
@@ -64,7 +65,7 @@ export async function publishToInstagram(params: {
 
   // Step 3: fetch permalink
   const permalinkRes = await fetch(
-    `https://graph.facebook.com/v21.0/${mediaId}?fields=permalink&access_token=${token}`
+    `https://graph.instagram.com/v21.0/${mediaId}?fields=permalink&access_token=${token}`
   )
   const permalinkJson = await permalinkRes.json()
 
@@ -73,19 +74,16 @@ export async function publishToInstagram(params: {
 
 export function buildOAuthLoginUrl(creator: Creator): string {
   const params = new URLSearchParams({
-    client_id: process.env.META_APP_ID || '',
-    redirect_uri: process.env.META_REDIRECT_URI || '',
+    client_id: process.env.IG_APP_ID || '',
+    redirect_uri: process.env.IG_REDIRECT_URI || '',
     scope: [
       'instagram_business_basic',
       'instagram_business_content_publish',
       'instagram_business_manage_comments',
       'instagram_business_manage_insights',
-      'pages_show_list',
-      'pages_read_engagement',
-      'business_management',
     ].join(','),
     response_type: 'code',
     state: creator,
   })
-  return `https://www.facebook.com/v21.0/dialog/oauth?${params.toString()}`
+  return `https://www.instagram.com/oauth/authorize?${params.toString()}`
 }
