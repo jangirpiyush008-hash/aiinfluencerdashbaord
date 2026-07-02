@@ -293,35 +293,7 @@ export default function NewBriefPage() {
               ))}
             </select>
           </Field>
-          <Field label="Which day's story?" hint="Pick the story this video piggybacks off (or fill 'Linked story concept' manually)">
-            <select
-              value={brief.linkedStoryDate}
-              onChange={(e) => {
-                update('linkedStoryDate', e.target.value)
-                const s = relatedStories.find((s) => s.date === e.target.value)
-                if (s) update('linkedStoryConcept', s.concept)
-              }}
-              className={inputCls}
-              disabled={!brief.creator}
-            >
-              <option value="">Pick date…</option>
-              {relatedStories.map((s) => (
-                <option key={s.id} value={s.date}>
-                  {s.date} — {s.emoji} {s.concept}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Linked story concept (auto-fills)">
-            <input
-              type="text"
-              value={brief.linkedStoryConcept}
-              onChange={(e) => update('linkedStoryConcept', e.target.value)}
-              placeholder="e.g. Morning skincare shelf ritual"
-              className={inputCls}
-            />
-          </Field>
-          <Field label="How does product fit into her daily life?" hint="The narrative bridge. Not 'buy this'. More: 'this is what she uses every morning.'">
+          <Field label="How does product fit into her daily life?" hint="The narrative bridge. Not 'buy this'. More: 'this is what she uses every morning.' Leave blank and Claude fills from story arc context.">
             <textarea
               value={brief.productInDailyLife}
               onChange={(e) => update('productInDailyLife', e.target.value)}

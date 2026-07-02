@@ -92,8 +92,6 @@ export default function BriefViewPage({ searchParams }: { searchParams: { d?: st
             <div style={{ color: '#888', fontSize: 12, marginTop: 4 }}>{arc.description}</div>
           </Row>
         )}
-        <Row k="Linked story date" v={brief.linkedStoryDate} />
-        <Row k="Linked story concept" v={brief.linkedStoryConcept} />
         <Row k="How the product fits into her daily life">
           <pre style={preStyle}>{brief.productInDailyLife || '—'}</pre>
         </Row>
