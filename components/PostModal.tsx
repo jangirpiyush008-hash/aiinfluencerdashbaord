@@ -8,6 +8,8 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   const [affiliateLink, setAffiliateLink] = useState(post?.affiliateLink || '')
   const [publishing, setPublishing] = useState(false)
   const [publishResult, setPublishResult] = useState<string | null>(null)
+  const [publishingTT, setPublishingTT] = useState(false)
+  const [publishResultTT, setPublishResultTT] = useState<string | null>(null)
   const [slideUrlsText, setSlideUrlsText] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
 
@@ -72,9 +74,6 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
     .split('\n')
     .map((s) => s.trim())
     .filter((s) => s.startsWith('http'))
-
-  const [publishingTT, setPublishingTT] = useState(false)
-  const [publishResultTT, setPublishResultTT] = useState<string | null>(null)
 
   const publishToTikTok = async () => {
     const finalVideoUrl = videoUrl || post.videoUrl || ''
