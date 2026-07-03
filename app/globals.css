@@ -5,7 +5,48 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
   -webkit-tap-highlight-color: transparent;
+  color: rgb(245 245 245);
+  background:
+    radial-gradient(1200px 800px at 15% -10%, rgba(236, 72, 153, 0.12), transparent 55%),
+    radial-gradient(1000px 700px at 90% 5%, rgba(168, 85, 247, 0.10), transparent 55%),
+    radial-gradient(900px 600px at 50% 100%, rgba(14, 165, 233, 0.08), transparent 60%),
+    #08080a;
+  background-attachment: fixed;
 }
+
+/* Reusable glass panel: subtle translucent surface + border */
+.glass {
+  background: rgba(17, 17, 20, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Gradient text used for hero headings */
+.gradient-text {
+  background: linear-gradient(115deg, #ec4899 0%, #a855f7 45%, #0ea5e9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Soft glow ring for hovered cards */
+@keyframes softPulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.pulse-dot { animation: softPulse 2.2s ease-in-out infinite; }
+
+/* Card hover lift */
+.hover-lift { transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease; }
+.hover-lift:hover { transform: translateY(-3px); }
+
+/* Fade in on mount */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in-up { animation: fadeInUp 260ms ease-out both; }
 
 ::-webkit-scrollbar {
   width: 10px;

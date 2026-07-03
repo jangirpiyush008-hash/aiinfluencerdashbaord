@@ -58,12 +58,21 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
-      <header className="border-b border-neutral-800 sticky top-0 bg-neutral-950/95 backdrop-blur-lg z-40">
+      <header className="glass sticky top-0 z-40 border-b border-white/5">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5">
           <div className="flex items-start justify-between gap-3 flex-wrap">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-lg sm:text-2xl font-bold">🎬 AI Influencer Dashboard</h1>
-              <p className="text-[11px] sm:text-sm text-neutral-400 mt-0.5 sm:mt-1">4 creators · 99 posts + 112 stories · Jul 2–29</p>
+            <div className="flex-1 min-w-0 fade-in-up">
+              <h1 className="text-lg sm:text-2xl font-bold flex items-center gap-2">
+                <span className="text-xl sm:text-2xl">🎬</span>
+                <span className="gradient-text">AI Influencer Dashboard</span>
+              </h1>
+              <p className="text-[11px] sm:text-sm text-neutral-400 mt-0.5 sm:mt-1">
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" /> Live
+                </span>
+                <span className="mx-2 text-neutral-600">·</span>
+                4 creators · 99 posts + 112 stories · Jul 2–29
+              </p>
             </div>
           </div>
 
@@ -73,9 +82,15 @@ export default function Home() {
               <button
                 key={c}
                 onClick={() => { setTab('calendar'); setSelectedCreator(c) }}
-                className="text-xs bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg px-3 py-2 flex items-center gap-2 transition-colors shrink-0"
+                className="text-xs bg-neutral-900/60 hover:bg-neutral-800/80 border border-white/5 hover:border-white/15 rounded-lg px-3 py-2 flex items-center gap-2 transition-all shrink-0 hover:-translate-y-0.5"
+                style={{
+                  boxShadow: `inset 0 0 0 1px ${CREATOR_META[c].color}22, 0 4px 12px -8px ${CREATOR_META[c].color}66`,
+                }}
               >
-                <span className="w-2 h-2 rounded-full" style={{ background: CREATOR_META[c].color }} />
+                <span
+                  className="w-2 h-2 rounded-full"
+                  style={{ background: CREATOR_META[c].color, boxShadow: `0 0 10px ${CREATOR_META[c].color}` }}
+                />
                 <span className="font-semibold">{c}</span>
                 <span className="text-neutral-500">{perCreator[c]}</span>
               </button>
@@ -96,7 +111,7 @@ export default function Home() {
 
       {tab === 'calendar' && (
         <>
-          <div className="border-b border-neutral-800 bg-neutral-950">
+          <div className="border-b border-white/5 bg-black/30 backdrop-blur">
             <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
               <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-3 sm:mx-0 px-3 sm:px-0">
                 <FilterChip active={selectedCreator === 'All'} onClick={() => setSelectedCreator('All')}>
@@ -141,11 +156,14 @@ export default function Home() {
             ) : (
               <div className="space-y-6 sm:space-y-10">
                 {grouped.map(([date, posts]) => (
-                  <section key={date}>
-                    <div className="mb-3 sm:mb-4 flex items-baseline gap-3">
-                      <h2 className="text-base sm:text-lg font-semibold">{date}</h2>
+                  <section key={date} className="fade-in-up">
+                    <div className="mb-3 sm:mb-4 flex items-center gap-3">
+                      <div className="h-6 w-1 rounded-full bg-gradient-to-b from-pink-500 via-fuchsia-500 to-sky-500" />
+                      <h2 className="text-base sm:text-lg font-semibold text-neutral-100">{date}</h2>
                       <span className="text-xs sm:text-sm text-neutral-500">{posts[0].day}</span>
-                      <span className="text-[11px] sm:text-xs text-neutral-600 ml-auto">{posts.length} {posts.length === 1 ? 'post' : 'posts'}</span>
+                      <span className="text-[11px] sm:text-xs text-neutral-500 ml-auto bg-white/5 border border-white/10 rounded-full px-2.5 py-0.5">
+                        {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+                      </span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                       {posts.map((p) => (
@@ -177,8 +195,8 @@ function TabButton({ active, onClick, icon, label }: { active: boolean; onClick:
       onClick={onClick}
       className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-full transition-all flex items-center gap-1.5 shrink-0 ${
         active
-          ? 'bg-white text-neutral-900 shadow-lg shadow-white/10'
-          : 'bg-neutral-900 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200 border border-neutral-800'
+          ? 'bg-gradient-to-r from-pink-500 via-fuchsia-500 to-sky-500 text-white shadow-lg shadow-fuchsia-500/25'
+          : 'bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/5 hover:border-white/15 backdrop-blur'
       }`}
     >
       <span className="text-base">{icon}</span>
@@ -201,11 +219,12 @@ function FilterChip({
   return (
     <button
       onClick={onClick}
-      className="text-xs px-3 py-2 rounded-full border transition-all shrink-0 whitespace-nowrap font-medium"
+      className="text-xs px-3 py-2 rounded-full border transition-all shrink-0 whitespace-nowrap font-medium hover:-translate-y-0.5"
       style={{
-        background: active ? (color ? `${color}22` : 'rgb(38 38 38)') : 'transparent',
-        borderColor: active ? (color || 'rgb(64 64 64)') : 'rgb(38 38 38)',
-        color: active ? (color || 'rgb(245 245 245)') : 'rgb(163 163 163)'
+        background: active ? (color ? `${color}22` : 'rgba(255,255,255,0.06)') : 'rgba(20,20,22,0.55)',
+        borderColor: active ? (color || 'rgba(255,255,255,0.18)') : 'rgba(255,255,255,0.06)',
+        color: active ? (color || 'rgb(245 245 245)') : 'rgb(180 180 185)',
+        boxShadow: active && color ? `0 6px 20px -10px ${color}` : 'none',
       }}
     >
       {children}

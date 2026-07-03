@@ -13,12 +13,20 @@ export default function PostCard({ post, onClick }: { post: Post; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="group text-left w-full bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-2xl overflow-hidden transition-all"
-      style={{ borderTopColor: meta.color, borderTopWidth: 3 }}
+      className="group text-left w-full bg-neutral-900/70 hover:bg-neutral-900 border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden hover-lift backdrop-blur-sm"
+      style={{
+        borderTopColor: meta.color,
+        borderTopWidth: 3,
+        boxShadow: `0 8px 30px -14px ${meta.color}66`,
+      }}
     >
       <div className="aspect-[4/5] relative bg-neutral-950 flex items-center justify-center overflow-hidden">
         {post.imageUrl ? (
-          <img src={post.imageUrl} alt={post.concept} className="w-full h-full object-cover" />
+          <img
+            src={post.imageUrl}
+            alt={post.concept}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+          />
         ) : (
           <div className="text-center p-4">
             <div className="text-5xl mb-2">
