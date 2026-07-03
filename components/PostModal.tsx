@@ -213,28 +213,31 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               }
               return (
                 <>
-                  <img src={previewUrls[idx]} alt={`${post.concept} slide ${idx + 1}`} className="max-w-full max-h-[600px] object-contain rounded-lg" />
+                  <img key={previewUrls[idx]} src={previewUrls[idx]} alt={`${post.concept} slide ${idx + 1}`} className="max-w-full max-h-[600px] object-contain rounded-lg" />
                   {previewUrls.length > 1 && (
                     <>
                       <button
-                        onClick={(e) => { e.stopPropagation(); setSlideIndex((idx - 1 + previewUrls.length) % previewUrls.length) }}
-                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg backdrop-blur"
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSlideIndex((idx - 1 + previewUrls.length) % previewUrls.length) }}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl leading-none backdrop-blur z-20 shadow-lg cursor-pointer"
                         aria-label="Previous slide"
                       >‹</button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); setSlideIndex((idx + 1) % previewUrls.length) }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg backdrop-blur"
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSlideIndex((idx + 1) % previewUrls.length) }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/70 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center text-2xl leading-none backdrop-blur z-20 shadow-lg cursor-pointer"
                         aria-label="Next slide"
                       >›</button>
-                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur">
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur z-20">
                         {idx + 1} / {previewUrls.length}
                       </div>
-                      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
                         {previewUrls.map((_, i) => (
                           <button
+                            type="button"
                             key={i}
-                            onClick={(e) => { e.stopPropagation(); setSlideIndex(i) }}
-                            className={`w-2 h-2 rounded-full transition-all ${i === idx ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}`}
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSlideIndex(i) }}
+                            className={`h-2 rounded-full transition-all cursor-pointer ${i === idx ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70 w-2'}`}
                             aria-label={`Go to slide ${i + 1}`}
                           />
                         ))}
@@ -467,32 +470,44 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
                 {copied === 'ig' ? '✓ Copied caption' : 'or copy caption manually'}
               </button>
 
-              {/* TikTok button (only for Ava + Mia) */}
+              {/* TikTok button (only for Ava + Mia, and only video posts — TikTok drafts API requires MP4) */}
               {tiktokAvailable ? (
-                <>
-                  <button
-                    onClick={publishToTikTok}
-                    disabled={publishingTT}
-                    className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
-                  >
-                    <span className="flex items-center gap-2">
-                      <span className="text-lg">🎵</span>
-                      <span>{publishingTT ? 'Uploading to drafts…' : 'Push to TikTok drafts'}</span>
-                    </span>
-                    <span className="text-xs bg-white/20 px-2 py-1 rounded">{publishingTT ? '⏳' : 'Draft'}</span>
-                  </button>
-                  {publishResultTT && (
-                    <div className="text-xs bg-neutral-950 border border-neutral-800 rounded px-3 py-2 break-all">
-                      {publishResultTT}
-                    </div>
-                  )}
-                  <button
-                    onClick={() => copy(tiktokCopy, 'tt')}
-                    className="w-full text-xs text-neutral-400 hover:text-neutral-200 underline"
-                  >
-                    {copied === 'tt' ? '✓ Copied caption + FYP tags' : 'or copy caption manually'}
-                  </button>
-                </>
+                post.format === 'video' ? (
+                  <>
+                    <button
+                      onClick={publishToTikTok}
+                      disabled={publishingTT}
+                      className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+                    >
+                      <span className="flex items-center gap-2">
+                        <span className="text-lg">🎵</span>
+                        <span>{publishingTT ? 'Uploading to drafts…' : 'Push to TikTok drafts'}</span>
+                      </span>
+                      <span className="text-xs bg-white/20 px-2 py-1 rounded">{publishingTT ? '⏳' : 'Draft'}</span>
+                    </button>
+                    {publishResultTT && (
+                      <div className="text-xs bg-neutral-950 border border-neutral-800 rounded px-3 py-2 break-all">
+                        {publishResultTT}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => copy(tiktokCopy, 'tt')}
+                      className="w-full text-xs text-neutral-400 hover:text-neutral-200 underline"
+                    >
+                      {copied === 'tt' ? '✓ Copied caption + FYP tags' : 'or copy caption manually'}
+                    </button>
+                  </>
+                ) : (
+                  <div className="text-xs text-neutral-500 bg-neutral-950 px-4 py-2 rounded-lg border border-neutral-800 flex items-center justify-between gap-2">
+                    <span>🎵 TikTok — video only (this is a {post.format} post)</span>
+                    <button
+                      onClick={() => copy(tiktokCopy, 'tt')}
+                      className="text-neutral-400 hover:text-neutral-200 underline text-[10px]"
+                    >
+                      {copied === 'tt' ? '✓ Copied' : 'Copy caption'}
+                    </button>
+                  </div>
+                )
               ) : (
                 <div className="text-xs text-neutral-500 bg-neutral-950 px-4 py-2 rounded-lg border border-neutral-800">
                   🚫 TikTok not available for {post.creator} (banned in India)
