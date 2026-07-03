@@ -12,6 +12,8 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   const [publishResultTT, setPublishResultTT] = useState<string | null>(null)
   const [slideUrlsText, setSlideUrlsText] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
+  const [slideIndex, setSlideIndex] = useState(0)
+  const [downloadingAll, setDownloadingAll] = useState(false)
 
   useEffect(() => {
     if (post) {
@@ -189,21 +191,59 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
       >
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="bg-neutral-950 aspect-[4/5] md:aspect-auto flex items-center justify-center p-6 relative">
-            {post.imageUrl ? (
-              <img src={post.imageUrl} alt={post.concept} className="max-w-full max-h-[600px] object-contain rounded-lg" />
-            ) : (
-              <div className="text-center space-y-4">
-                <div className="text-7xl">
-                  {post.format === 'carousel' ? '📚' : post.format === 'video' ? '🎥' : '📷'}
-                </div>
-                <div className="text-sm text-neutral-500 uppercase tracking-widest">
-                  {post.format} {post.slides > 1 && `· ${post.slides} slides`}
-                </div>
-                <div className="text-neutral-400 text-sm max-w-xs mx-auto px-4">
-                  {post.format === 'video' ? 'Video will be generated when you share reference + product' : 'Preview will appear here after Higgsfield generation.'}
-                </div>
-              </div>
-            )}
+            {(() => {
+              const previewUrls: string[] = post.format === 'carousel'
+                ? (parsedSlideUrls.length ? parsedSlideUrls : post.imageUrls?.length ? post.imageUrls : post.imageUrl ? [post.imageUrl] : [])
+                : post.imageUrl ? [post.imageUrl] : []
+              const idx = Math.min(slideIndex, previewUrls.length - 1)
+              if (previewUrls.length === 0) {
+                return (
+                  <div className="text-center space-y-4">
+                    <div className="text-7xl">
+                      {post.format === 'carousel' ? '📚' : post.format === 'video' ? '🎥' : '📷'}
+                    </div>
+                    <div className="text-sm text-neutral-500 uppercase tracking-widest">
+                      {post.format} {post.slides > 1 && `· ${post.slides} slides`}
+                    </div>
+                    <div className="text-neutral-400 text-sm max-w-xs mx-auto px-4">
+                      {post.format === 'video' ? 'Video will be generated when you share reference + product' : 'Preview will appear here after Higgsfield generation.'}
+                    </div>
+                  </div>
+                )
+              }
+              return (
+                <>
+                  <img src={previewUrls[idx]} alt={`${post.concept} slide ${idx + 1}`} className="max-w-full max-h-[600px] object-contain rounded-lg" />
+                  {previewUrls.length > 1 && (
+                    <>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSlideIndex((idx - 1 + previewUrls.length) % previewUrls.length) }}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg backdrop-blur"
+                        aria-label="Previous slide"
+                      >‹</button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSlideIndex((idx + 1) % previewUrls.length) }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/90 text-white w-9 h-9 rounded-full flex items-center justify-center text-lg backdrop-blur"
+                        aria-label="Next slide"
+                      >›</button>
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-black/70 text-white text-xs px-2.5 py-1 rounded-full backdrop-blur">
+                        {idx + 1} / {previewUrls.length}
+                      </div>
+                      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        {previewUrls.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={(e) => { e.stopPropagation(); setSlideIndex(i) }}
+                            className={`w-2 h-2 rounded-full transition-all ${i === idx ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}`}
+                            aria-label={`Go to slide ${i + 1}`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
+              )
+            })()}
             {post.isDubaiArc && (
               <div className="absolute top-4 right-4 bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">🌴 Dubai Arc</div>
             )}
@@ -294,22 +334,57 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               )}
             </div>
 
-            {/* DOWNLOAD IMAGE */}
-            {post.imageUrl && (
-              <a
-                href={post.imageUrl}
-                download={`post-${post.id}-${post.creator}.png`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-xl font-semibold transition-all"
-              >
-                <span className="flex items-center gap-2">
-                  <span className="text-lg">⬇️</span>
-                  <span>Download image</span>
-                </span>
-                <span className="text-xs bg-white/10 px-2 py-1 rounded">Save to device</span>
-              </a>
-            )}
+            {/* DOWNLOAD IMAGES — high quality, direct to laptop */}
+            {(() => {
+              const downloadUrls: string[] = post.format === 'carousel'
+                ? (parsedSlideUrls.length ? parsedSlideUrls : post.imageUrls?.length ? post.imageUrls : post.imageUrl ? [post.imageUrl] : [])
+                : post.imageUrl ? [post.imageUrl] : []
+              if (downloadUrls.length === 0) return null
+
+              const downloadAll = async () => {
+                setDownloadingAll(true)
+                try {
+                  for (let i = 0; i < downloadUrls.length; i++) {
+                    const url = downloadUrls[i]
+                    const res = await fetch(url)
+                    const blob = await res.blob()
+                    const objUrl = URL.createObjectURL(blob)
+                    const a = document.createElement('a')
+                    a.href = objUrl
+                    const label = downloadUrls.length > 1 ? `-slide-${i + 1}` : ''
+                    a.download = `post-${post.id}-${post.creator}${label}.png`
+                    document.body.appendChild(a)
+                    a.click()
+                    document.body.removeChild(a)
+                    URL.revokeObjectURL(objUrl)
+                    // small pause so browser doesn't cancel subsequent downloads
+                    await new Promise((r) => setTimeout(r, 350))
+                  }
+                } finally {
+                  setDownloadingAll(false)
+                }
+              }
+
+              return (
+                <button
+                  onClick={downloadAll}
+                  disabled={downloadingAll}
+                  className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">⬇️</span>
+                    <span>
+                      {downloadingAll
+                        ? `Downloading… (${downloadUrls.length} file${downloadUrls.length > 1 ? 's' : ''})`
+                        : downloadUrls.length > 1
+                        ? `Download all ${downloadUrls.length} images`
+                        : 'Download image'}
+                    </span>
+                  </span>
+                  <span className="text-xs bg-white/10 px-2 py-1 rounded">Full quality → laptop</span>
+                </button>
+              )
+            })()}
 
             {/* MEDIA URLS — carousel slides or reel video */}
             {post.format === 'carousel' && (
