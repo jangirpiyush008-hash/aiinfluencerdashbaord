@@ -125,6 +125,26 @@ function StoryCard({ story, onClick }: { story: Story; onClick: () => void }) {
 function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
   const [copied, setCopied] = useState(false)
   const [publishing, setPublishing] = useState(false)
+  const [downloading, setDownloading] = useState(false)
+
+  const downloadStoryImage = async () => {
+    if (!story.imageUrl) return
+    setDownloading(true)
+    try {
+      const res = await fetch(story.imageUrl)
+      const blob = await res.blob()
+      const objUrl = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = objUrl
+      a.download = `story-${story.id}-${story.creator}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(objUrl)
+    } finally {
+      setDownloading(false)
+    }
+  }
   const [publishResult, setPublishResult] = useState<string | null>(null)
   const meta = CREATOR_META[story.creator]
 
@@ -247,21 +267,19 @@ function StoryModal({ story, onClose }: { story: Story; onClose: () => void }) {
               </div>
             </div>
 
-            {/* DOWNLOAD IMAGE */}
+            {/* DOWNLOAD IMAGE — full quality direct to device */}
             {story.imageUrl && (
-              <a
-                href={story.imageUrl}
-                download={`story-${story.id}-${story.creator}.png`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+              <button
+                onClick={downloadStoryImage}
+                disabled={downloading}
+                className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
               >
                 <span className="flex items-center gap-2">
                   <span className="text-lg">⬇️</span>
-                  <span>Download image</span>
+                  <span>{downloading ? 'Downloading…' : 'Download image'}</span>
                 </span>
-                <span className="text-xs bg-white/10 px-2 py-1 rounded">Save to device</span>
-              </a>
+                <span className="text-xs bg-white/10 px-2 py-1 rounded">Full quality → laptop</span>
+              </button>
             )}
 
             {/* AUTO-PUBLISH TO INSTAGRAM STORY */}
