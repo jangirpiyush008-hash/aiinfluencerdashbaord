@@ -55,15 +55,21 @@ async function fetchPermalink(mediaId: string, token: string): Promise<string> {
   return json.permalink || `https://www.instagram.com/p/${mediaId}`
 }
 
-// Poll a container until it's ready (needed for videos + carousel children)
+// Poll a container until it's ready. Instagram needs 1-5 sec even for
+// single image feed / story posts before publish is accepted.
 async function waitForContainerReady(containerId: string, token: string, maxAttempts = 30): Promise<void> {
+  // Initial short delay — most image containers are ready in 1-2 sec
+  await new Promise((r) => setTimeout(r, 1500))
+
   for (let i = 0; i < maxAttempts; i++) {
     const res = await fetch(`${GRAPH}/${containerId}?fields=status_code&access_token=${token}`)
     const json = await res.json()
     if (json.status_code === 'FINISHED') return
+    if (json.status_code === 'PUBLISHED') return // already published (shouldn't happen mid-flow but treat as done)
     if (json.status_code === 'ERROR' || json.status_code === 'EXPIRED') {
       throw new Error(`Container ${containerId} failed: ${JSON.stringify(json)}`)
     }
+    // IN_PROGRESS or unknown → keep polling
     await new Promise((r) => setTimeout(r, 2000))
   }
   throw new Error(`Container ${containerId} not ready after ${maxAttempts * 2}s`)
@@ -98,7 +104,6 @@ export async function publishToInstagram(params: {
         media_type: 'STORIES',
         video_url: videoUrl,
       })
-      await waitForContainerReady(creationId, token)
     } else {
       creationId = await createContainer(igUserId, token, {
         media_type: 'STORIES',
@@ -110,12 +115,13 @@ export async function publishToInstagram(params: {
     if (!imageUrls || imageUrls.length < 2 || imageUrls.length > 10) {
       throw new Error('carousel needs 2-10 image URLs')
     }
-    // Create child containers (marked is_carousel_item)
-    const childIds = await Promise.all(
-      imageUrls.map((url) =>
-        createContainer(igUserId, token, { image_url: url, is_carousel_item: 'true' })
-      )
-    )
+    // Create child containers (marked is_carousel_item) — wait for each to finish
+    const childIds: string[] = []
+    for (const url of imageUrls) {
+      const id = await createContainer(igUserId, token, { image_url: url, is_carousel_item: 'true' })
+      await waitForContainerReady(id, token)
+      childIds.push(id)
+    }
     // Create parent carousel container
     creationId = await createContainer(igUserId, token, {
       media_type: 'CAROUSEL',
@@ -129,10 +135,13 @@ export async function publishToInstagram(params: {
       video_url: videoUrl,
       caption,
     })
-    await waitForContainerReady(creationId, token)
   } else {
     throw new Error(`Unknown kind: ${kind}`)
   }
+
+  // Wait for the (parent) container to be ready across all kinds — Instagram
+  // sometimes needs 1-5 sec even for a single image feed post
+  await waitForContainerReady(creationId, token)
 
   const mediaId = await publishContainer(igUserId, token, creationId)
   const permalink = await fetchPermalink(mediaId, token)
