@@ -36,9 +36,9 @@ export default function PostStackCard({ stack, onClick }: { stack: PostStack; on
             </div>
           </div>
         )}
-        {stack.posts.length > 1 && (
+        {totalSlides > 1 && (
           <div className="absolute top-2 right-2 bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur">
-            {stack.posts.length} posts · {totalSlides} imgs
+            {stack.posts.length > 1 ? `${stack.posts.length} posts · ${totalSlides} imgs` : `${totalSlides} imgs`}
           </div>
         )}
         {allDone && (

@@ -550,7 +550,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                 {copied === 'ig' ? '✓ Copied caption' : 'or copy caption manually'}
               </button>
 
-              {/* TikTok button (only for Ava + Mia, and only video posts — TikTok drafts API requires MP4) */}
+              {/* TikTok button — available on ALL posts + all creators. Photo posts → TikTok Photos slideshow tool manually; video posts → auto-push to drafts. */}
               {tiktokAvailable ? (
                 post.format === 'video' ? (
                   <>
@@ -561,7 +561,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                     >
                       <span className="flex items-center gap-2">
                         <span className="text-lg">🎵</span>
-                        <span>{publishingTT ? 'Uploading to drafts…' : 'Push to TikTok drafts'}</span>
+                        <span>{publishingTT ? 'Uploading to drafts…' : 'Push to TikTok drafts (auto)'}</span>
                       </span>
                       <span className="text-xs bg-white/20 px-2 py-1 rounded">{publishingTT ? '⏳' : 'Draft'}</span>
                     </button>
@@ -570,28 +570,35 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                         {publishResultTT}
                       </div>
                     )}
-                    <button
-                      onClick={() => copy(tiktokCopy, 'tt')}
-                      className="w-full text-xs text-neutral-400 hover:text-neutral-200 underline"
-                    >
-                      {copied === 'tt' ? '✓ Copied caption + FYP tags' : 'or copy caption manually'}
-                    </button>
                   </>
                 ) : (
-                  <div className="text-xs text-neutral-500 bg-neutral-950 px-4 py-2 rounded-lg border border-neutral-800 flex items-center justify-between gap-2">
-                    <span>🎵 TikTok — video only (this is a {post.format} post)</span>
-                    <button
-                      onClick={() => copy(tiktokCopy, 'tt')}
-                      className="text-neutral-400 hover:text-neutral-200 underline text-[10px]"
-                    >
-                      {copied === 'tt' ? '✓ Copied' : 'Copy caption'}
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => copy(tiktokCopy, 'tt')}
+                    className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-lg">🎵</span>
+                      <span>Push to TikTok (photos → auto-slideshow)</span>
+                    </span>
+                    <span className="text-xs bg-white/20 px-2 py-1 rounded">
+                      {copied === 'tt' ? '✓ Caption copied' : 'Copy + open TikTok'}
+                    </span>
+                  </button>
                 )
               ) : (
-                <div className="text-xs text-neutral-500 bg-neutral-950 px-4 py-2 rounded-lg border border-neutral-800">
-                  🚫 TikTok not available for {post.creator} (banned in India)
-                </div>
+                <button
+                  onClick={() => copy(tiktokCopy, 'tt')}
+                  className="w-full flex items-center justify-between gap-3 bg-neutral-800 hover:bg-neutral-700 text-white px-4 py-3 rounded-xl font-semibold transition-all"
+                  title="TikTok banned in India for Siya/Kiara — use CapCut Photo→Video Slideshow as backup (same output)."
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">🎵</span>
+                    <span>Push via CapCut Slideshow ({post.creator} = India)</span>
+                  </span>
+                  <span className="text-xs bg-white/10 px-2 py-1 rounded">
+                    {copied === 'tt' ? '✓ Copied' : 'Copy caption'}
+                  </span>
+                </button>
               )}
 
               {/* Pinterest button (all 4 creators) */}
