@@ -53,6 +53,7 @@ export type Post = {
   generatedAt?: string
   affiliateLink?: string
   productName?: string
+  location?: string // IG geo-tag venue (e.g. "Barry's Bootcamp Chicago"). Defaults to creator city.
 }
 
 export type CreatorMeta = {

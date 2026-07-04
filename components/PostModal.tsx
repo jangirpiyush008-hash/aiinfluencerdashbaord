@@ -54,9 +54,13 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   const meta = CREATOR_META[post.creator]
 
   const linkSuffix = affiliateLink ? `\n\n🛒 link in bio 👆` : ''
+  const locationTag = post.location || `${meta.city}, ${meta.country}`
+  const locationLine = `\n📍 ${locationTag}`
 
-  const igCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
-  const tiktokCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou`
+  const igCopy = `${post.caption}${locationLine}${linkSuffix}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
+  const trendingTags = ['viral','trending','explore','reels','instadaily','fyp','2026']
+  const igCopyTrending = `${post.caption}${locationLine}${linkSuffix}\n\n${[...post.hashtags, ...trendingTags].map(t => '#' + t).join(' ')}`
+  const tiktokCopy = `${post.caption}${locationLine}${linkSuffix}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou #viral`
   const pinterestCopy = `TITLE: ${post.concept}\n\nDESCRIPTION: ${post.caption}\n\nDESTINATION LINK: ${affiliateLink || '(none — leave blank on Pinterest)'}\n\nHASHTAGS: ${post.hashtags.map(t => '#' + t).join(' ')}`
 
   const saveLink = () => {
@@ -321,15 +325,45 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
               </div>
             </div>
 
+            {/* LOCATION TAG */}
+            <div className="bg-purple-500/10 border border-purple-500/40 rounded-xl p-3 space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold">📍 Location tag</div>
+              <div className="text-white text-sm">{locationTag}</div>
+              <div className="text-[10px] text-neutral-400">Add this via Instagram's "Add Location" sticker when posting — geo tags 2-3× local reach.</div>
+            </div>
+
             {/* READY-TO-POST PREVIEW */}
-            <div className="border-2 border-emerald-500/40 bg-emerald-500/5 rounded-xl p-4 space-y-2">
-              <div className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">🚀 Ready-to-post (caption + hashtags)</div>
+            <div className="border-2 border-emerald-500/40 bg-emerald-500/5 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="text-xs uppercase tracking-wider text-emerald-300 font-semibold">🚀 Ready-to-post caption</div>
+                <button onClick={() => copy(igCopy, 'ig')} className="text-[10px] bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 px-2 py-1 rounded">
+                  {copied === 'ig' ? '✓' : 'Copy'}
+                </button>
+              </div>
               <div className="text-neutral-100 whitespace-pre-wrap bg-neutral-950/60 p-3 rounded border border-neutral-800 text-sm">
                 {igCopy}
               </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-[10px] text-orange-300 uppercase tracking-wider">🔥 Trending variant (viral + fyp + explore + reels tags added)</div>
+                  <button onClick={() => copy(igCopyTrending, 'igt')} className="text-[10px] bg-orange-500/20 hover:bg-orange-500/30 text-orange-200 px-2 py-1 rounded">
+                    {copied === 'igt' ? '✓' : 'Copy'}
+                  </button>
+                </div>
+                <div className="text-neutral-200 whitespace-pre-wrap bg-neutral-950/60 p-2 rounded border border-neutral-800 text-xs">
+                  {igCopyTrending}
+                </div>
+              </div>
+
               {tiktokAvailable && (
                 <div>
-                  <div className="text-[10px] text-cyan-300 uppercase tracking-wider mb-1">TikTok version (with FYP tags)</div>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="text-[10px] text-cyan-300 uppercase tracking-wider">TikTok version (FYP + viral)</div>
+                    <button onClick={() => copy(tiktokCopy, 'ttc')} className="text-[10px] bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-200 px-2 py-1 rounded">
+                      {copied === 'ttc' ? '✓' : 'Copy'}
+                    </button>
+                  </div>
                   <div className="text-neutral-200 whitespace-pre-wrap bg-neutral-950/60 p-2 rounded border border-neutral-800 text-xs">
                     {tiktokCopy}
                   </div>
