@@ -1,7 +1,8 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { STORIES, Story } from '@/lib/stories'
 import { CREATOR_META, Creator } from '@/lib/types'
+import { isDone, setDone } from '@/lib/doneState'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 
@@ -16,6 +17,13 @@ type StoryGroup = {
 export default function StoriesView() {
   const [selectedCreator, setSelectedCreator] = useState<Creator | 'All'>('All')
   const [openGroup, setOpenGroup] = useState<StoryGroup | null>(null)
+  const [doneTick, setDoneTick] = useState(0)
+
+  useEffect(() => {
+    const on = () => setDoneTick(t => t + 1)
+    window.addEventListener('storage', on)
+    return () => window.removeEventListener('storage', on)
+  }, [])
 
   const filtered = useMemo(() => {
     if (selectedCreator === 'All') return STORIES
@@ -86,14 +94,14 @@ export default function StoriesView() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
               {groups.map(g => (
-                <StackCard key={g.key} group={g} onClick={() => setOpenGroup(g)} />
+                <StackCard key={g.key + ':' + doneTick} group={g} onClick={() => setOpenGroup(g)} />
               ))}
             </div>
           </section>
         ))}
       </div>
 
-      {openGroup && <StoryStackModal group={openGroup} onClose={() => setOpenGroup(null)} />}
+      {openGroup && <StoryStackModal group={openGroup} onClose={() => { setOpenGroup(null); setDoneTick(t => t + 1) }} />}
     </div>
   )
 }
@@ -101,11 +109,13 @@ export default function StoriesView() {
 function StackCard({ group, onClick }: { group: StoryGroup; onClick: () => void }) {
   const meta = CREATOR_META[group.creator]
   const cover = group.stories.find(s => s.imageUrl) || group.stories[0]
+  const doneCount = group.stories.filter(s => isDone(s.id)).length
+  const allDone = doneCount === group.stories.length && group.stories.length > 0
   return (
     <button
       onClick={onClick}
       className="group text-left w-full rounded-2xl overflow-hidden bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all"
-      style={{ borderTopColor: meta.color, borderTopWidth: 3 }}
+      style={{ borderTopColor: meta.color, borderTopWidth: 3, opacity: allDone ? 0.55 : 1 }}
     >
       <div className="aspect-[9/16] relative bg-neutral-950 overflow-hidden">
         {cover.imageUrl ? (
@@ -116,6 +126,16 @@ function StackCard({ group, onClick }: { group: StoryGroup; onClick: () => void 
         <div className="absolute top-2 right-2 bg-black/80 text-white text-[10px] font-bold px-2 py-1 rounded-full backdrop-blur">
           {group.stories.length} 📚
         </div>
+        {allDone && (
+          <div className="absolute inset-0 bg-emerald-500/25 flex items-center justify-center backdrop-blur-[2px]">
+            <div className="bg-emerald-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-2xl">✓ Done</div>
+          </div>
+        )}
+        {!allDone && doneCount > 0 && (
+          <div className="absolute bottom-14 right-2 bg-emerald-500/80 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+            {doneCount}/{group.stories.length} done
+          </div>
+        )}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/70 to-transparent p-3">
           <div className="text-sm font-semibold" style={{ color: meta.color }}>{group.creator}</div>
           <div className="text-[10px] text-neutral-300 truncate">{group.day} · tap to open stack</div>
@@ -131,9 +151,26 @@ function StoryStackModal({ group, onClose }: { group: StoryGroup; onClose: () =>
   const [publishing, setPublishing] = useState(false)
   const [publishResult, setPublishResult] = useState<string | null>(null)
   const [downloading, setDownloading] = useState(false)
+  const [doneCurrent, setDoneCurrent] = useState<boolean>(isDone(group.stories[0].id))
+  const [doneAll, setDoneAll] = useState<boolean>(group.stories.every(s => isDone(s.id)))
 
   const meta = CREATOR_META[group.creator]
   const current = group.stories[idx]
+
+  useEffect(() => { setDoneCurrent(isDone(current.id)) }, [current.id])
+
+  const toggleCurrentDone = () => {
+    const nv = !doneCurrent
+    setDone(current.id, nv)
+    setDoneCurrent(nv)
+    setDoneAll(group.stories.every(s => isDone(s.id)))
+  }
+  const markAllDone = () => {
+    const target = !doneAll
+    group.stories.forEach(s => setDone(s.id, target))
+    setDoneAll(target)
+    setDoneCurrent(target)
+  }
   const defaultLoc = `${meta.city}, ${meta.country}`
 
   const overlayCopy = (s: Story) => {
@@ -206,6 +243,34 @@ function StoryStackModal({ group, onClose }: { group: StoryGroup; onClose: () =>
         style={{ borderTopColor: meta.color, borderTopWidth: 4 }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* TOP BAR — nav + mark-done (matches PostModal pattern) */}
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-neutral-950 border-b border-neutral-800">
+          <div className="text-xs text-neutral-400">
+            Story <span className="text-white font-semibold">{idx + 1}</span> / {group.stories.length}
+            <span className="mx-2 text-neutral-600">·</span>
+            <span className="uppercase text-[10px] tracking-wider" style={{ color: meta.color }}>{group.creator}</span>
+          </div>
+          <button
+            onClick={toggleCurrentDone}
+            className={`ml-auto text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
+              doneCurrent ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+            }`}
+          >
+            {doneCurrent ? '✓ Done — undo' : 'Mark done'}
+          </button>
+          {group.stories.length > 1 && (
+            <button
+              onClick={markAllDone}
+              className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
+                doneAll ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+              }`}
+            >
+              {doneAll ? '✓ All done' : 'Mark all done'}
+            </button>
+          )}
+          <button onClick={onClose} className="text-neutral-400 hover:text-white text-2xl leading-none px-2">×</button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* LEFT — image viewer with prev/next */}
           <div className="bg-neutral-950 aspect-[9/16] md:aspect-auto min-h-[520px] flex items-center justify-center relative overflow-hidden">

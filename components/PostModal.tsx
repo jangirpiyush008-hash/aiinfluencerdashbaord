@@ -64,6 +64,12 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
   if (!post || !stack) return null
   const meta = CREATOR_META[post.creator]
   const toggleDone = () => { const nv = !doneState; setDone(post.id, nv); setDoneState(nv) }
+  const allDoneInStack = stack.posts.every(p => isDone(p.id))
+  const markAllDone = () => {
+    const target = !allDoneInStack
+    stack.posts.forEach(p => setDone(p.id, target))
+    setDoneState(target)
+  }
 
   const linkSuffix = affiliateLink ? `\n\n🛒 link in bio 👆` : ''
   const locationTag = post.location || `${meta.city}, ${meta.country}`
@@ -234,8 +240,18 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
               doneState ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
             }`}
           >
-            {doneState ? '✓ Done — click to undo' : 'Mark done'}
+            {doneState ? '✓ Done — undo' : 'Mark done'}
           </button>
+          {stack.posts.length > 1 && (
+            <button
+              onClick={markAllDone}
+              className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
+                allDoneInStack ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+              }`}
+            >
+              {allDoneInStack ? '✓ All done' : 'Mark all done'}
+            </button>
+          )}
           <button onClick={onClose} className="text-neutral-400 hover:text-white text-2xl leading-none px-2">×</button>
         </div>
 
