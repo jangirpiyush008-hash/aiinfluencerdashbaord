@@ -1,11 +1,17 @@
 'use client'
 import { Post, CREATOR_META } from '@/lib/types'
 import { useEffect, useState } from 'react'
+import { isDone, setDone } from '@/lib/doneState'
+import type { PostStack } from '@/app/page'
 
-export default function PostModal({ post, onClose }: { post: Post | null; onClose: () => void }) {
+export default function PostModal({ stack, onClose }: { stack: PostStack | null; onClose: () => void }) {
+  const [postIdx, setPostIdx] = useState(0)
+  const post: Post | null = stack ? stack.posts[Math.min(postIdx, stack.posts.length - 1)] : null
+
   const [copied, setCopied] = useState<string | null>(null)
   const [productName, setProductName] = useState(post?.productName || '')
   const [affiliateLink, setAffiliateLink] = useState(post?.affiliateLink || '')
+  const [doneState, setDoneState] = useState<boolean>(post ? isDone(post.id) : false)
   const [publishing, setPublishing] = useState(false)
   const [publishResult, setPublishResult] = useState<string | null>(null)
   const [publishingTT, setPublishingTT] = useState(false)
@@ -15,10 +21,14 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
   const [slideIndex, setSlideIndex] = useState(0)
   const [downloadingAll, setDownloadingAll] = useState(false)
 
+  // Reset postIdx when the stack changes
+  useEffect(() => { setPostIdx(0) }, [stack?.key])
+
   useEffect(() => {
     if (post) {
       setProductName(post.productName || '')
       setAffiliateLink(post.affiliateLink || '')
+      setDoneState(isDone(post.id))
       // Persist to localStorage per post so it survives modal close
       const key = `post-${post.id}-link`
       const saved = localStorage.getItem(key)
@@ -43,6 +53,7 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
         setVideoUrl(post.videoUrl || '')
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [post?.id])
 
   const saveMedia = (imageUrls: string[], videoUrl: string) => {
@@ -50,8 +61,9 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
     localStorage.setItem(`post-${post.id}-media`, JSON.stringify({ imageUrls, videoUrl }))
   }
 
-  if (!post) return null
+  if (!post || !stack) return null
   const meta = CREATOR_META[post.creator]
+  const toggleDone = () => { const nv = !doneState; setDone(post.id, nv); setDoneState(nv) }
 
   const linkSuffix = affiliateLink ? `\n\n🛒 link in bio 👆` : ''
   const locationTag = post.location || `${meta.city}, ${meta.country}`
@@ -193,6 +205,40 @@ export default function PostModal({ post, onClose }: { post: Post | null; onClos
         style={{ borderTopColor: meta.color, borderTopWidth: 4 }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* STACK NAV — jump between posts in the same creator/day stack */}
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-neutral-950 border-b border-neutral-800">
+          {stack.posts.length > 1 && (
+            <>
+              <button
+                onClick={() => setPostIdx((postIdx - 1 + stack.posts.length) % stack.posts.length)}
+                className="bg-neutral-800 hover:bg-neutral-700 text-white w-8 h-8 rounded-full flex items-center justify-center text-lg"
+                aria-label="Previous post"
+              >‹</button>
+              <div className="text-xs text-neutral-400">
+                Post <span className="text-white font-semibold">{postIdx + 1}</span> / {stack.posts.length}
+                <span className="mx-2 text-neutral-600">·</span>
+                <span className="uppercase text-[10px] tracking-wider" style={{ color: meta.color }}>
+                  {post.format === 'tiktok-slideshow' ? '🎵 TikTok slideshow' : post.format === 'video' ? '🎥 Reel' : post.format === 'carousel' ? '📚 Carousel' : '📷 ' + post.format}
+                </span>
+              </div>
+              <button
+                onClick={() => setPostIdx((postIdx + 1) % stack.posts.length)}
+                className="bg-neutral-800 hover:bg-neutral-700 text-white w-8 h-8 rounded-full flex items-center justify-center text-lg"
+                aria-label="Next post"
+              >›</button>
+            </>
+          )}
+          <button
+            onClick={toggleDone}
+            className={`ml-auto text-xs font-semibold px-3 py-1.5 rounded-full transition-all ${
+              doneState ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+            }`}
+          >
+            {doneState ? '✓ Done — click to undo' : 'Mark done'}
+          </button>
+          <button onClick={onClose} className="text-neutral-400 hover:text-white text-2xl leading-none px-2">×</button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="bg-neutral-950 aspect-[4/5] md:aspect-auto flex items-center justify-center p-6 relative">
             {(() => {

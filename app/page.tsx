@@ -1,8 +1,8 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CALENDAR } from '@/lib/calendar'
 import { CREATOR_META, Creator, Post, PostStatus } from '@/lib/types'
-import PostCard from '@/components/PostCard'
+import PostStackCard from '@/components/PostStackCard'
 import PostModal from '@/components/PostModal'
 import CreatorsView from '@/components/CreatorsView'
 import VideoTemplatesView from '@/components/VideoTemplatesView'
@@ -15,6 +15,14 @@ type Tab = 'calendar' | 'stories' | 'creators' | 'story' | 'videos' | 'analytics
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 const STATUSES: PostStatus[] = ['pending', 'generated', 'scheduled', 'posted']
 
+export type PostStack = {
+  key: string
+  creator: Creator
+  date: string
+  day: string
+  posts: Post[]
+}
+
 export default function Home() {
   const [tab, setTab] = useState<Tab>('calendar')
   const [selectedCreator, setSelectedCreator] = useState<Creator | 'All'>('All')
@@ -22,7 +30,15 @@ export default function Home() {
   const [dubaiOnly, setDubaiOnly] = useState(false)
   const [petOnly, setPetOnly] = useState(false)
   const [videosOnly, setVideosOnly] = useState(false)
-  const [openPost, setOpenPost] = useState<Post | null>(null)
+  const [openStack, setOpenStack] = useState<PostStack | null>(null)
+  // Re-render tick so the "done" badge updates when localStorage flips
+  const [doneTick, setDoneTick] = useState(0)
+
+  useEffect(() => {
+    const onStorage = () => setDoneTick(t => t + 1)
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
 
   const filtered = useMemo(() => {
     return CALENDAR.filter((p) => {
@@ -47,11 +63,19 @@ export default function Home() {
     return counts
   }, [])
 
+  // Group by (date, creator) → one card per creator per day
   const grouped = useMemo(() => {
-    const byDate: Record<string, Post[]> = {}
+    const bucket: Record<string, PostStack> = {}
     filtered.forEach((p) => {
-      byDate[p.date] = byDate[p.date] || []
-      byDate[p.date].push(p)
+      const key = `${p.date}::${p.creator}`
+      if (!bucket[key]) bucket[key] = { key, creator: p.creator, date: p.date, day: p.day, posts: [] }
+      bucket[key].posts.push(p)
+    })
+    const stacks = Object.values(bucket).sort((a, b) => a.posts[0].id - b.posts[0].id)
+    const byDate: Record<string, PostStack[]> = {}
+    stacks.forEach(s => {
+      byDate[s.date] = byDate[s.date] || []
+      byDate[s.date].push(s)
     })
     return Object.entries(byDate).sort(([a], [b]) => a.localeCompare(b))
   }, [filtered])
@@ -71,12 +95,11 @@ export default function Home() {
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" /> Live
                 </span>
                 <span className="mx-2 text-neutral-600">·</span>
-                4 creators · 99 posts + 112 stories · Jul 2–29
+                4 creators · one card per creator per day
               </p>
             </div>
           </div>
 
-          {/* Creator pills — horizontal scroll on mobile */}
           <div className="flex gap-2 items-center mt-3 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
             {CREATORS.map((c) => (
               <button
@@ -97,7 +120,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* TAB SWITCHER — icon + label always, horizontal scroll on mobile */}
           <div className="flex gap-1.5 mt-3 sm:mt-5 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
             <TabButton active={tab === 'calendar'} onClick={() => setTab('calendar')} icon="📅" label="Calendar" />
             <TabButton active={tab === 'stories'} onClick={() => setTab('stories')} icon="📱" label="Stories" />
@@ -137,15 +159,9 @@ export default function Home() {
                   </FilterChip>
                 ))}
                 <div className="w-px bg-neutral-800 mx-1" />
-                <FilterChip active={dubaiOnly} onClick={() => setDubaiOnly(!dubaiOnly)}>
-                  🌴 Dubai arc
-                </FilterChip>
-                <FilterChip active={petOnly} onClick={() => setPetOnly(!petOnly)}>
-                  🐕 Pet posts
-                </FilterChip>
-                <FilterChip active={videosOnly} onClick={() => setVideosOnly(!videosOnly)}>
-                  🎥 Product videos
-                </FilterChip>
+                <FilterChip active={dubaiOnly} onClick={() => setDubaiOnly(!dubaiOnly)}>🌴 Dubai arc</FilterChip>
+                <FilterChip active={petOnly} onClick={() => setPetOnly(!petOnly)}>🐕 Pet posts</FilterChip>
+                <FilterChip active={videosOnly} onClick={() => setVideosOnly(!videosOnly)}>🎥 Product videos</FilterChip>
               </div>
             </div>
           </div>
@@ -155,19 +171,19 @@ export default function Home() {
               <div className="text-center text-neutral-500 py-20">No posts match your filters.</div>
             ) : (
               <div className="space-y-6 sm:space-y-10">
-                {grouped.map(([date, posts]) => (
+                {grouped.map(([date, stacks]) => (
                   <section key={date} className="fade-in-up">
                     <div className="mb-3 sm:mb-4 flex items-center gap-3">
                       <div className="h-6 w-1 rounded-full bg-gradient-to-b from-pink-500 via-fuchsia-500 to-sky-500" />
                       <h2 className="text-base sm:text-lg font-semibold text-neutral-100">{date}</h2>
-                      <span className="text-xs sm:text-sm text-neutral-500">{posts[0].day}</span>
+                      <span className="text-xs sm:text-sm text-neutral-500">{stacks[0].day}</span>
                       <span className="text-[11px] sm:text-xs text-neutral-500 ml-auto bg-white/5 border border-white/10 rounded-full px-2.5 py-0.5">
-                        {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+                        {stacks.length} creator{stacks.length > 1 ? 's' : ''} · {stacks.reduce((n, s) => n + s.posts.length, 0)} posts
                       </span>
                     </div>
                     <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                      {posts.map((p) => (
-                        <PostCard key={p.id} post={p} onClick={() => setOpenPost(p)} />
+                      {stacks.map((s) => (
+                        <PostStackCard key={s.key + ':' + doneTick} stack={s} onClick={() => setOpenStack(s)} />
                       ))}
                     </div>
                   </section>
@@ -184,7 +200,7 @@ export default function Home() {
       {tab === 'videos' && <VideoTemplatesView />}
       {tab === 'analytics' && <AnalyticsView />}
 
-      <PostModal post={openPost} onClose={() => setOpenPost(null)} />
+      <PostModal stack={openStack} onClose={() => { setOpenStack(null); setDoneTick(t => t + 1) }} />
     </main>
   )
 }
@@ -206,10 +222,7 @@ function TabButton({ active, onClick, icon, label }: { active: boolean; onClick:
 }
 
 function FilterChip({
-  active,
-  onClick,
-  color,
-  children
+  active, onClick, color, children
 }: {
   active: boolean
   onClick: () => void
