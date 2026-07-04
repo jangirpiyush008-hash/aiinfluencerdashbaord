@@ -108,13 +108,15 @@ export const STORY_ARCS: StoryArc[] = [
 export const CREATOR_CAST: Record<Creator, CreatorCast> = {
   Siya: {
     creator: 'Siya',
+    // Per Piyush 2026-07-04: Siya stays SINGLE. Sweet modest Indian girl vibe.
+    // No boyfriend appearances in any post/story going forward.
     boyfriend: {
-      name: 'Aryan Kapoor',
-      role: 'Boyfriend',
-      age: 28,
-      vibe: 'Bangalore product manager, soft masc, laid-back charm, chai + startup guy',
+      name: '(none — Siya is single)',
+      role: 'N/A',
+      age: 0,
+      vibe: 'Siya is intentionally single per creator strategy',
       soulIdStatus: 'concept',
-      faceDescription: 'Fair Indian, ~6ft, wavy dark brown hair, clean shave, warm brown eyes, soft jawline. Wears linen shirts + jeans + Airpods. Chill startup founder energy.'
+      faceDescription: 'DO NOT GENERATE — Siya is single, no romantic partner reveals'
     },
     family: [
       { name: 'Meera Sharma', role: 'Mom', age: 52, vibe: 'Warm Karnataka woman, saree lover, doctor', soulIdStatus: 'concept', faceDescription: 'Fair Indian woman, ~5\'3, salt-pepper wavy hair, warm sultry brown eyes like Siya, gold Karnataka jewelry, mature soft glam.' },
@@ -171,9 +173,9 @@ export const CREATOR_CAST: Record<Creator, CreatorCast> = {
       faceDescription: 'Mixed Latino-American man, ~6\'1, dark brown short hair (slight fade), trimmed stubble, hazel eyes, sharp jawline, athletic build in tailored suits. Wears Loro Piana + Rolex + designer sneakers on weekends.'
     },
     family: [
-      { name: 'Elena Monroe', role: 'Mom', age: 55, vibe: 'Manhattan lifestyle mother, art curator, silk-scarf tier', soulIdStatus: 'concept', faceDescription: 'American woman, ~5\'7, platinum blonde chic bob, blue eyes, cashmere sweaters, gold jewelry, editorial mom.' },
-      { name: 'Richard Monroe', role: 'Dad', age: 60, vibe: 'Retired lawyer, sailing club, old-money vibes', soulIdStatus: 'concept', faceDescription: 'American man, ~6ft, silver hair, blue eyes, blazer + polo, easy Hamptons energy.' },
-      { name: 'Chloe Monroe', role: 'Sister (younger)', age: 24, vibe: 'Barnard senior, cool girl fashion, artier version of Ava', soulIdStatus: 'concept', faceDescription: 'American woman, ~5\'8, dark brown hair (contrast to Ava), similar sharp features, downtown edgy.' }
+      { name: 'Isabella Monroe', role: 'Mom', age: 45, vibe: 'Young hot rich mom (Yolanda-Hadid-meets-Elle-Macpherson), Manhattan art curator + gallery owner, quiet luxury elegance', soulIdStatus: 'concept', faceDescription: 'American woman, 5\'8 tall, platinum blonde long waves cascading, ice-blue eyes, sculpted jaw, tan sun-kissed dewy skin, wears The Row + Loro Piana + Chanel + Cartier Love bracelet + Van Cleef Alhambra necklace, does not look like a 45yo mom — looks 30. Quiet luxury elegance.' },
+      { name: 'Richard Monroe', role: 'Dad', age: 47, vibe: 'Young hot rich dad (think DiCaprio 40s / John Slattery), Wall Street hedge fund, silver fox with sharp jaw, alpha rich energy', soulIdStatus: 'concept', faceDescription: 'American man, 6\'1 tall, silver-fox salt-and-pepper hair swept back, deep-set green-hazel eyes, chiseled sharp jaw with 5 o clock shadow, tan sculpted athletic build, wears Loro Piana cashmere polos + Brunello Cucinelli linen suits + Rolex Daytona + Persol sunglasses. Looks 35, not 47.' },
+      { name: 'Ethan Monroe', role: 'Brother (older)', age: 26, vibe: 'Hot model brother, Ralph-Lauren-catalog face, part-time finance / part-time model, drives own G-Wagon, rich boy energy', soulIdStatus: 'concept', faceDescription: 'American man, 6\'2 tall, chiseled jaw, sun-kissed brown hair swept back, hazel-blue eyes, tan sculpted athletic build, always in tailored Loro Piana + Brunello Cucinelli linen suits or Ralph Lauren polos + cashmere sweaters, Cartier Tank watch, Persol tortoise sunglasses. Editorial model face.' }
     ],
     pet: { name: 'Marshall', role: 'Golden Retriever 🐕', age: 3, vibe: 'Sweet gentle boy, blue collar, tongue always out', soulIdStatus: 'pending', faceDescription: 'Purebred Golden Retriever, honey-gold coat, warm brown eyes, blue leather collar with gold tag.' },
     locations: ['NYC UES apartment', 'Central Park', 'Soho + Meatpacking', 'The Hamptons summer', 'Miami escapes', 'Fashion Week venues']

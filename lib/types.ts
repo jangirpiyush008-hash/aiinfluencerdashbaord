@@ -1,6 +1,24 @@
 export type Creator = 'Siya' | 'Kiara' | 'Mia' | 'Ava'
 export type PostStatus = 'pending' | 'generated' | 'scheduled' | 'posted'
-export type PostFormat = 'single' | 'carousel' | 'video'
+export type PostFormat =
+  | 'single'          // 1 image
+  | 'mini-carousel'   // 2 images paired
+  | 'carousel'        // 3-4 slides, story arc
+  | 'diary'           // 8-slide Sunday recap, day-in-my-life
+  | 'video'           // real Higgsfield-generated 15-20s reel
+  | 'tiktok-slideshow' // 4-5 photos → TikTok Photo→Video tool → cross-post to IG Reel (Mia + Ava only)
+
+export type FrameType =
+  | 'real-object-selfie'
+  | 'product-flat-lay'
+  | 'restaurant-food'
+  | 'cameo'  // boyfriend / family / pet
+  | 'atmosphere' // sunset / balcony / cruise
+  | 'blurry-candid'
+  | 'bold-sexy'
+  | 'mundane-real-life'
+  | 'face-mask-raw'
+  | 'big-reveal'
 
 export type Post = {
   id: number
@@ -19,6 +37,7 @@ export type Post = {
   imageUrls?: string[] // for carousels (2-10 URLs)
   videoUrl?: string // for reels
   status: PostStatus
+  frameTypes?: FrameType[]  // which of the 10 frame types this post rotates through
   isDubaiArc?: boolean
   isPetPost?: boolean
   petName?: 'Marshall' | 'Blinki'
@@ -27,6 +46,8 @@ export type Post = {
   isBoyfriendPost?: boolean
   isFamilyPost?: boolean
   isBeachPost?: boolean
+  isRevealPost?: boolean  // family / boyfriend / pet first appearance
+  isCrossPostReel?: boolean // Mia/Ava — same TikTok slideshow also posts to IG as Reel
   storyArcId?: string
   higgsfieldJobId?: string
   generatedAt?: string
@@ -55,6 +76,15 @@ export type CreatorMeta = {
   carColor: string
   carPlate: string
   carDescription: string
+  // Locked brand vocabulary — 2026-07-04 constitution rules
+  phone: string          // e.g. "Pink iPhone 17 Pro Max"
+  coffeeShops: string[]  // rotation of chains for this creator
+  salons: string[]       // hair / nails / skin salons
+  waterBottle: string    // Stanley / Hydro Flask / Owala / etc
+  kitchenBrands: string  // "Wolf range + SMEG pink kettle + Nespresso"
+  restaurants: string[]  // locked luxury dinner spots
+  fitnessStudios: string[] // Cult.fit / Barry's / SoulCycle
+  retailStores: string[]  // shopping content locations
   fashionStyle: string
   fashionBrands: string[]
   signatureLooks: string[]
@@ -88,6 +118,14 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carColor: 'Phantom Black',
     carPlate: 'KA 01 SS 2026',
     carDescription: 'Sleek black Hyundai Creta 2026 SUV with chrome grille, tinted windows, Karnataka registration plate "KA 01 SS 2026", parked outside Bangalore cafés or her home garage. Face lock the car — same plate always.',
+    phone: 'Samsung Galaxy Z Fold 7 in Phantom Black (foldable form factor — distinctive on purpose, she is the tech-forward Indian professional)',
+    coffeeShops: ['Blue Tokai Coffee Roasters Bangalore', 'Third Wave Coffee Bangalore', 'home Nespresso setup'],
+    salons: ['Enrich Salon Bangalore (hair)', 'Toni & Guy Bangalore (color)', 'Nykaa nail bar (nails)', 'Kaya Skin Clinic Indiranagar (skin)'],
+    waterBottle: 'copper Ayurvedic bottle at home + YETI Rambler cream stainless steel when out',
+    kitchenBrands: 'traditional gas stove + Prestige electric kettle + Bialetti moka pot + Kalsi filter coffee maker + Sujata mixer grinder',
+    restaurants: ['Toit Whitefield', 'Truffles Koramangala', 'Sanchez Kitchen', 'The Fatty Bao', 'Copper + Cloves'],
+    fitnessStudios: ['Cult.fit Indiranagar', 'SARVA Yoga Bangalore'],
+    retailStores: ['Anokhi Bangalore', 'Nykaa Luxe MG Road', 'Sabyasachi Bangalore', 'Charlotte Tilbury counter Nykaa Luxe'],
     fashionStyle: 'Modern Indian sweet-feminine — Sabyasachi meets Anokhi. Silk kurtis, cotton kurta sets, printed midi dresses, banarasi silk saris for occasions, kolhapuri chappals, jhumkas + delicate gold chain. Beauty content in cream silk robes, luxury vanity setups. Indian modern-professional workwear = kurti + palazzo.',
     fashionBrands: ['Anokhi', 'Fabindia', 'Sabyasachi', 'Payal Singhal', 'Ritu Kumar', 'Nappa Dori', 'Amrapali', 'Charlotte Tilbury', 'Tatcha', 'Drunk Elephant'],
     signatureLooks: [
@@ -124,6 +162,14 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carColor: 'British Racing Green',
     carPlate: 'MH 04 KR 2024',
     carDescription: 'British racing green Mini Cooper Countryman with white roof + white bonnet stripes, JCW styling, black alloys, Maharashtra plate "MH 04 KR 2024". Bandra Mumbai apartment garage or Cult.fit parking. Face lock the exact car — same plate always.',
+    phone: 'Black iPhone 17 Pro Max in Space Titanium',
+    coffeeShops: ['Blue Tokai Coffee Roasters Bandra', 'Starbucks Bandra Palladium', 'Third Wave Coffee Bandra'],
+    salons: ['Looks Salon Bandra (hair)', 'BBLUNT Bandra (color)', 'Nail Spa Mumbai Bandra', 'Kaya Skin Clinic Bandra'],
+    waterBottle: 'Owala FreeSip in black for daily, Stanley Quencher for gym',
+    kitchenBrands: 'Kaff 4-burner gas hob + SMEG mint green kettle + Nespresso Vertuo Plus + Bosch dishwasher + KitchenAid stand mixer cream',
+    restaurants: ['Bastian Bandra', 'Papas Bandra', 'The Table Colaba', 'Foxglove Bandra', 'Ekaa Fort'],
+    fitnessStudios: ['Cult.fit Bandra (primary)', 'F45 Bandra', 'The Yoga Institute Santa Cruz'],
+    retailStores: ['Nykaa Luxe Bandra', 'Sabyasachi flagship Kala Ghoda', 'Cult.fit shop Bandra', 'Zara Palladium', 'Manish Malhotra store Kemps Corner'],
     fashionStyle: 'Fitness-forward bombshell — Cult.fit gym gear for 60% of posts + Bandra-cool bombshell fashion off-gym. Gym wardrobe = deep-V sports bras, high-waist compression leggings, cropped hoodies. Off-gym = deep-V black silk slip dresses, satin bodycon, cream co-ord lounge sets. Punjabi elegance for family posts.',
     fashionBrands: ['Cultsport', 'Nike', 'Lululemon', 'Alo Yoga', 'Gymshark', 'Zara', 'H&M Studio', 'Sabyasachi (occasion)', 'Manish Malhotra (occasion)'],
     signatureLooks: [
@@ -160,6 +206,14 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carColor: 'Interstellar Black',
     carPlate: 'IL MCARTER',
     carDescription: 'Massive black Hummer EV SUV (matte black finish), aggressive aftermarket wheels, blackout windows, Illinois vanity plate "MCARTER". Parked at Chicago high-rise gym garage or her West Loop building. Face lock — same plate always.',
+    phone: 'Silver iPhone 17 Pro Max in Natural Titanium',
+    coffeeShops: ['Starbucks Reserve Chicago Roastery Michigan Ave', 'Tim Hortons downtown Chicago', 'Blue Bottle Coffee River North (occasional editorial)'],
+    salons: ['Drybar Chicago (blowouts)', 'Maxine Salon Gold Coast (hair color)', 'Paintbox Chicago (nails)', 'Olive & June (at-home mani)', 'Skin Laundry Chicago'],
+    waterBottle: 'Stanley Quencher stainless steel in cream',
+    kitchenBrands: 'Wolf 4-burner range + SMEG mint green kettle + Nespresso Vertuo Plus + KitchenAid stand mixer cream + Miele dishwasher',
+    restaurants: ['Alinea (special)', 'Beatnik on the River', 'Elske', 'Kasama', 'Le Sud', 'Somerset Lincoln Park'],
+    fitnessStudios: ['Barrys Bootcamp Chicago West Loop', 'Solidcore Chicago', 'SoulCycle Chicago', 'Alo Yoga Chicago'],
+    retailStores: ['Nordstrom Michigan Ave', 'Alo Yoga Chicago', 'Lululemon flagship Michigan Ave', 'Sephora State Street', 'Bloomingdales Michigan Ave'],
     fashionStyle: 'Athletic bombshell — 80% fitness gear (matching seamless sets, deep-V sports bras). Off-gym = lounge sets, slip dresses for date nights, denim for casual. Bright pops (neon green, coral) mixed with cream/white base.',
     fashionBrands: ['Lululemon', 'Nike', 'Alo Yoga', 'Bandier', 'Vuori', 'Gymshark', 'Skims', 'Free People (casual)', 'Reformation (date night)'],
     signatureLooks: [
@@ -198,6 +252,14 @@ export const CREATOR_META: Record<Creator, CreatorMeta> = {
     carColor: 'Rosa Corsa (custom pink)',
     carPlate: 'AVA MNR',
     carDescription: 'Custom Rosa Corsa pink Ferrari 488 GTB with beige leather interior + Ferrari yellow calipers, NY vanity plate "AVA MNR". Parked outside NYC luxury apartments, Hamptons driveway, or valet at Cipriani. Face lock — same plate always.',
+    phone: 'Pink iPhone 17 Pro Max in Rose Titanium (custom pink metallic finish)',
+    coffeeShops: ['Starbucks Reserve Roastery NYC Chelsea', 'Tim Hortons Midtown', 'Blue Bottle Coffee NoMad (editorial)'],
+    salons: ['Rita Hazan (color)', 'Ted Gibson (styling)', 'Paintbox NYC (nails)', 'Chillhouse Nolita', 'Skin Laundry NYC', 'Dr. Barbara Sturm Bar Madison Ave'],
+    waterBottle: 'Hydro Flask matte pink 32oz for daily, Owala FreeSip for Barrys Bootcamp',
+    kitchenBrands: 'Wolf 6-burner range + SMEG pastel pink electric kettle + Nespresso Vertuo Next + Sub-Zero built-in fridge + KitchenAid stand mixer pastel pink',
+    restaurants: ['Cipriani Downtown', 'The Living Room by Cipriani', 'Zuma Madison Ave', 'Bar Pitti', 'Sant Ambroeus', 'Sushi Nakazawa', 'Balthazar SoHo'],
+    fitnessStudios: ['Barrys Bootcamp NYC Meatpacking', 'SoulCycle NoHo', 'Y7 Yoga Nolita', 'Rumble Boxing'],
+    retailStores: ['Bergdorf Goodman', 'The Row store SoHo', 'Chanel Madison Ave', 'Hermes Madison Ave', 'Balmain 20 Rue Saint-Honore (when Paris)'],
     fashionStyle: 'Quiet-luxury editorial bombshell — silk slips, tailored blazers, designer bags, Louboutin heels, cashmere sweaters. Fashion Week backstage energy. Old-money-meets-new-money NYC. Everyday luxury: Loro Piana + The Row + Hermès rotation. Occasion: Chanel, Balmain, Bottega. Never fast-fashion.',
     fashionBrands: ['Chanel', 'Hermès', 'The Row', 'Loro Piana', 'Balmain', 'Bottega Veneta', 'Christian Louboutin', 'Celine', 'Prada', 'Cartier', 'Van Cleef & Arpels'],
     signatureLooks: [
