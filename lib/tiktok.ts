@@ -61,7 +61,11 @@ export function buildTikTokOAuthLoginUrl(creator: Creator): string {
   const params = new URLSearchParams({
     client_key: clientKey,
     response_type: 'code',
-    scope: 'user.info.basic,user.info.profile,user.info.stats,video.upload',
+    // Scopes must match what the TikTok app has enabled in the developer portal —
+    // requesting an unapproved scope makes the authorize screen error out.
+    // To add follower stats: enable user.info.stats in the portal, then set
+    // TIKTOK_SCOPES env to include it.
+    scope: (process.env.TIKTOK_SCOPES || 'user.info.basic,user.info.profile,video.upload').trim(),
     redirect_uri: redirectUri,
     state: creator,
   })
