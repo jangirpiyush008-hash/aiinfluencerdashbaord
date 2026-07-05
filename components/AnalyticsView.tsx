@@ -265,9 +265,10 @@ export default function AnalyticsView() {
                         <Metric label="Interactions" value={fmt(ig.interactions7d)} />
                       </div>
                       {ig.mediaList && ig.mediaList.length > 0 && (
-                        <div className="mt-3 space-y-1.5">
-                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Recent posts</div>
-                          {ig.mediaList.map((p) => (
+                        <ExpandableRows
+                          label="Recent posts"
+                          items={ig.mediaList}
+                          renderItem={(p) => (
                             <a
                               key={p.id}
                               href={p.permalink || '#'}
@@ -288,8 +289,8 @@ export default function AnalyticsView() {
                                 </div>
                               </div>
                             </a>
-                          ))}
-                        </div>
+                          )}
+                        />
                       )}
                     </>
                   ) : (
@@ -329,9 +330,10 @@ export default function AnalyticsView() {
                           <Metric label="Videos" value={fmt(tt.videos ?? tt.videoList?.length ?? null)} />
                         </div>
                         {tt.videoList && tt.videoList.length > 0 && (
-                          <div className="mt-3 space-y-1.5">
-                            <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Recent videos</div>
-                            {tt.videoList.slice(0, 6).map((v) => (
+                          <ExpandableRows
+                            label="Recent videos"
+                            items={tt.videoList}
+                            renderItem={(v) => (
                               <a
                                 key={v.id}
                                 href={v.shareUrl || '#'}
@@ -352,8 +354,8 @@ export default function AnalyticsView() {
                                   </div>
                                 </div>
                               </a>
-                            ))}
-                          </div>
+                            )}
+                          />
                         )}
                         {tt.videoListError && (
                           <div className="text-[10px] text-orange-300 mt-2 leading-relaxed">⚠ {tt.videoListError}</div>
@@ -392,6 +394,29 @@ export default function AnalyticsView() {
         Reach / views / engagement come from the platform insights API and can lag ~24-48h for brand-new accounts.
         TikTok follower stats need the <code>user.info.stats</code> scope — if the video-platform block shows ⚠, reconnect Mia + Ava with the updated scope.
       </div>
+    </div>
+  )
+}
+
+function ExpandableRows<T>({
+  label, items, renderItem, initial = 3
+}: {
+  label: string; items: T[]; renderItem: (item: T) => React.ReactNode; initial?: number
+}) {
+  const [expanded, setExpanded] = useState(false)
+  const visible = expanded ? items : items.slice(0, initial)
+  return (
+    <div className="mt-3 space-y-1.5">
+      <div className="text-[10px] text-neutral-500 uppercase tracking-wider">{label}</div>
+      {visible.map(renderItem)}
+      {items.length > initial && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full text-[11px] font-semibold text-neutral-400 hover:text-neutral-100 bg-neutral-900 hover:bg-neutral-800 rounded-lg py-1.5 transition-colors"
+        >
+          {expanded ? '▴ Show less' : `▾ Show all ${items.length}`}
+        </button>
+      )}
     </div>
   )
 }
