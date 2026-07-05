@@ -71,7 +71,18 @@ export default function AnalyticsView() {
       .finally(() => setLoading(false))
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load()
+    // Auto-refresh: every 5 minutes while the page is open…
+    const interval = setInterval(load, 5 * 60 * 1000)
+    // …and immediately when the tab regains focus (e.g. coming back from TikTok/IG)
+    const onFocus = () => load()
+    window.addEventListener('focus', onFocus)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [load])
 
   // Published counts from the local done-state
   const published = useMemo(() => {
