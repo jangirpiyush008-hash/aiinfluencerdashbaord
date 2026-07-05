@@ -2,146 +2,225 @@
 import { CREATOR_META, Creator } from '@/lib/types'
 import { CALENDAR } from '@/lib/calendar'
 import { STORIES } from '@/lib/stories'
-import { useEffect, useState } from 'react'
+import { isDone } from '@/lib/doneState'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 
-type ConnectionStatus = {
-  instagram: { connected: number; total: number; byCreator: Record<Creator, boolean> }
-  tiktok: { connected: number; total: number; byCreator: Record<Creator, boolean> }
-  pinterest: { connected: number; total: number; byCreator: Record<Creator, boolean> }
+type IgStats = {
+  connected: boolean
+  username?: string
+  followers?: number
+  following?: number
+  mediaCount?: number
+  reach7d?: number | null
+  views7d?: number | null
+  profileViews7d?: number | null
+  accountsEngaged7d?: number | null
+  interactions7d?: number | null
+  error?: string
 }
 
-// Placeholder analytics — will populate from real IG + TikTok APIs once connected
-type Metrics = {
-  followers: { instagram: number; tiktok: number | null }
-  reach7d: { instagram: number; tiktok: number | null }
-  engagement7d: { instagram: number; tiktok: number | null }
-  postsPublished: number
-  storiesPublished: number
+type TtStats = {
+  connected: boolean
+  displayName?: string
+  followers?: number | null
+  likes?: number | null
+  videos?: number | null
+  error?: string
 }
 
-const PLACEHOLDER: Record<Creator, Metrics> = {
-  Siya: {
-    followers: { instagram: 0, tiktok: null },
-    reach7d: { instagram: 0, tiktok: null },
-    engagement7d: { instagram: 0, tiktok: null },
-    postsPublished: 0,
-    storiesPublished: 0
-  },
-  Kiara: {
-    followers: { instagram: 0, tiktok: null },
-    reach7d: { instagram: 0, tiktok: null },
-    engagement7d: { instagram: 0, tiktok: null },
-    postsPublished: 0,
-    storiesPublished: 0
-  },
-  Mia: {
-    followers: { instagram: 0, tiktok: 0 },
-    reach7d: { instagram: 0, tiktok: 0 },
-    engagement7d: { instagram: 0, tiktok: 0 },
-    postsPublished: 0,
-    storiesPublished: 0
-  },
-  Ava: {
-    followers: { instagram: 0, tiktok: 0 },
-    reach7d: { instagram: 0, tiktok: 0 },
-    engagement7d: { instagram: 0, tiktok: 0 },
-    postsPublished: 0,
-    storiesPublished: 0
-  }
+type Analytics = {
+  creators: Record<Creator, { instagram: IgStats; tiktok: TtStats }>
+  fetchedAt: string
 }
+
+const fmt = (n: number | null | undefined) =>
+  n === null || n === undefined ? '—' : n.toLocaleString()
 
 export default function AnalyticsView() {
-  const combinedFollowers = CREATORS.reduce((sum, c) => {
-    const m = PLACEHOLDER[c]
-    return sum + m.followers.instagram + (m.followers.tiktok || 0)
-  }, 0)
+  const [data, setData] = useState<Analytics | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const [status, setStatus] = useState<ConnectionStatus | null>(null)
-  useEffect(() => {
-    fetch('/api/status')
+  const load = useCallback(() => {
+    setLoading(true)
+    setError(null)
+    fetch('/api/analytics', { cache: 'no-store' })
       .then((r) => r.json())
-      .then(setStatus)
-      .catch(() => setStatus(null))
+      .then((j) => setData(j))
+      .catch((e) => setError(String(e)))
+      .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => { load() }, [load])
+
+  // Published counts from the local done-state
+  const published = useMemo(() => {
+    const posts = CALENDAR.filter((p) => isDone(p.id)).length
+    const stories = STORIES.filter((s) => isDone(s.id)).length
+    return { posts, stories }
+  }, [])
+
+  // Combined totals across creators
+  const totals = useMemo(() => {
+    if (!data?.creators) return null
+    let igFollowers = 0, ttFollowers = 0, reach = 0, views = 0, engaged = 0, interactions = 0
+    let hasReach = false, hasViews = false, hasEngaged = false, hasInteractions = false
+    for (const c of CREATORS) {
+      const s = data.creators[c]
+      if (!s) continue
+      igFollowers += s.instagram.followers ?? 0
+      ttFollowers += s.tiktok.followers ?? 0
+      if (s.instagram.reach7d != null) { reach += s.instagram.reach7d; hasReach = true }
+      if (s.instagram.views7d != null) { views += s.instagram.views7d; hasViews = true }
+      if (s.instagram.accountsEngaged7d != null) { engaged += s.instagram.accountsEngaged7d; hasEngaged = true }
+      if (s.instagram.interactions7d != null) { interactions += s.instagram.interactions7d; hasInteractions = true }
+    }
+    return {
+      igFollowers, ttFollowers,
+      allFollowers: igFollowers + ttFollowers,
+      reach7d: hasReach ? reach : null,
+      views7d: hasViews ? views : null,
+      engaged7d: hasEngaged ? engaged : null,
+      interactions7d: hasInteractions ? interactions : null,
+    }
+  }, [data])
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
-      <div>
-        <h2 className="text-3xl font-bold mb-2">📊 Analytics</h2>
-        <p className="text-neutral-400 max-w-3xl">
-          Real-time performance across Instagram + TikTok. Data will populate here once API integrations are approved (Meta 2-14 days, TikTok 3-7 days).
-        </p>
-      </div>
-
-      {/* HERO STATS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total followers" value={combinedFollowers.toLocaleString()} sub="across all platforms" />
-        <StatCard label="Posts published" value="0 / 99" sub="from July calendar" />
-        <StatCard label="Stories posted" value="0 / 112" sub="daily stories" />
-        <StatCard label="Reach last 7d" value="—" sub="waiting on API" />
-      </div>
-
-      {/* PLATFORM SPLIT */}
-      <div>
-        <h3 className="text-xl font-bold mb-4">By Platform</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <PlatformCard
-            name="Instagram"
-            icon="📷"
-            gradient="from-pink-500 to-orange-500"
-            creators={status?.instagram.total ?? CREATORS.length}
-            connected={status?.instagram.connected ?? 0}
-          />
-          <PlatformCard
-            name="TikTok"
-            icon="🎵"
-            gradient="from-cyan-500 to-pink-500"
-            creators={status?.tiktok.total ?? 2}
-            note="Ava + Mia only (banned in India)"
-            connected={status?.tiktok.connected ?? 0}
-          />
-          <PlatformCard
-            name="Pinterest"
-            icon="📌"
-            gradient="from-red-600 to-red-500"
-            creators={status?.pinterest.total ?? CREATORS.length}
-            note="Best for affiliate traffic — pins live 6-24 months"
-            connected={status?.pinterest.connected ?? 0}
-          />
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h2 className="text-3xl font-bold mb-2">📊 Analytics</h2>
+          <p className="text-neutral-400 max-w-3xl">
+            Live metrics pulled from the platform APIs per creator.
+            {data?.fetchedAt && (
+              <span className="text-neutral-500"> · Updated {new Date(data.fetchedAt).toLocaleTimeString()}</span>
+            )}
+          </p>
         </div>
+        <button
+          onClick={load}
+          disabled={loading}
+          className="text-sm bg-gradient-to-r from-pink-500 to-orange-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-2 rounded-xl font-semibold"
+        >
+          {loading ? '⏳ Refreshing…' : '🔄 Refresh'}
+        </button>
       </div>
 
-      {/* CREATOR BREAKDOWN */}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/40 rounded-xl px-4 py-3 text-sm text-red-200">
+          Failed to load analytics: {error}
+        </div>
+      )}
+
+      {/* COMBINED HERO STATS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard label="Total followers" value={totals ? fmt(totals.allFollowers) : '…'} sub={`IG ${totals ? fmt(totals.igFollowers) : '…'} · TT ${totals ? fmt(totals.ttFollowers) : '…'}`} />
+        <StatCard label="Reach last 7d" value={totals ? fmt(totals.reach7d) : '…'} sub="all accounts combined" />
+        <StatCard label="Views last 7d" value={totals ? fmt(totals.views7d) : '…'} sub="all accounts combined" />
+        <StatCard label="Interactions 7d" value={totals ? fmt(totals.interactions7d) : '…'} sub={`engaged: ${totals ? fmt(totals.engaged7d) : '…'}`} />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard label="Posts published" value={`${published.posts} / ${CALENDAR.length}`} sub="marked done on dashboard" />
+        <StatCard label="Stories posted" value={`${published.stories} / ${STORIES.length}`} sub="marked done on dashboard" />
+        <StatCard label="IG accounts live" value={data ? `${CREATORS.filter(c => data.creators[c]?.instagram.connected).length} / 4` : '…'} sub="tokens active" />
+        <StatCard label="TT accounts live" value={data ? `${CREATORS.filter(c => data.creators[c]?.tiktok.connected).length} / 2` : '…'} sub="Mia + Ava only" />
+      </div>
+
+      {/* PER-CREATOR DETAIL */}
       <div>
-        <h3 className="text-xl font-bold mb-4">By Creator</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {CREATORS.map(c => {
+        <h3 className="text-xl font-bold mb-4">By Creator — full detail</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {CREATORS.map((c) => {
             const meta = CREATOR_META[c]
-            const m = PLACEHOLDER[c]
-            const totalPosts = CALENDAR.filter(p => p.creator === c).length
-            const totalStories = STORIES.filter(s => s.creator === c).length
+            const s = data?.creators?.[c]
+            const ig = s?.instagram
+            const tt = s?.tiktok
+            const totalPosts = CALENDAR.filter((p) => p.creator === c).length
+            const donePosts = CALENDAR.filter((p) => p.creator === c && isDone(p.id)).length
+            const totalStories = STORIES.filter((st) => st.creator === c).length
+            const doneStories = STORIES.filter((st) => st.creator === c && isDone(st.id)).length
 
             return (
-              <div key={c} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5" style={{ borderTopColor: meta.color, borderTopWidth: 3 }}>
-                <div className="text-lg font-bold mb-1" style={{ color: meta.color }}>{c}</div>
-                <div className="text-xs text-neutral-500 mb-4">{meta.city}</div>
+              <div
+                key={c}
+                className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5"
+                style={{ borderTopColor: meta.color, borderTopWidth: 3 }}
+              >
+                <div className="flex items-baseline justify-between mb-1">
+                  <div className="text-lg font-bold" style={{ color: meta.color }}>{c}</div>
+                  <div className="text-xs text-neutral-500">{meta.city}</div>
+                </div>
+                {ig?.username && (
+                  <div className="text-xs text-neutral-400 mb-3">@{ig.username}</div>
+                )}
 
-                <div className="space-y-3">
-                  <StatRow icon="📷" label="Instagram" value={m.followers.instagram.toLocaleString() + ' followers'} />
-                  {meta.tiktokAvailable ? (
-                    <StatRow icon="🎵" label="TikTok" value={(m.followers.tiktok ?? 0).toLocaleString() + ' followers'} />
+                {/* INSTAGRAM BLOCK */}
+                <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-semibold text-pink-300 uppercase tracking-wider">📷 Photo platform</div>
+                    <div className={`text-[10px] px-2 py-0.5 rounded-full ${ig?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
+                      {ig?.connected ? 'connected' : 'not connected'}
+                    </div>
+                  </div>
+                  {ig?.connected ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      <Metric label="Followers" value={fmt(ig.followers)} />
+                      <Metric label="Following" value={fmt(ig.following)} />
+                      <Metric label="Posts" value={fmt(ig.mediaCount)} />
+                      <Metric label="Reach 7d" value={fmt(ig.reach7d)} />
+                      <Metric label="Views 7d" value={fmt(ig.views7d)} />
+                      <Metric label="Profile views" value={fmt(ig.profileViews7d)} />
+                      <Metric label="Engaged 7d" value={fmt(ig.accountsEngaged7d)} />
+                      <Metric label="Interactions" value={fmt(ig.interactions7d)} />
+                    </div>
                   ) : (
-                    <StatRow icon="🚫" label="TikTok" value="Not available (India)" muted />
+                    <div className="text-xs text-neutral-500">{loading ? 'Loading…' : 'Connect at /connect'}</div>
                   )}
-                  <div className="h-px bg-neutral-800 my-2" />
-                  <StatRow icon="📅" label="Posts planned" value={`${totalPosts} in July`} muted />
-                  <StatRow icon="📱" label="Stories planned" value={`${totalStories} in July`} muted />
+                  {ig?.error && <div className="text-[10px] text-orange-300 mt-2 break-all">⚠ {ig.error}</div>}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-neutral-800 text-xs text-neutral-500">
-                  Connect API to enable live metrics ↗
+                {/* TIKTOK BLOCK */}
+                <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">🎵 Video platform</div>
+                    {meta.tiktokAvailable ? (
+                      <div className={`text-[10px] px-2 py-0.5 rounded-full ${tt?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
+                        {tt?.connected ? 'connected' : 'not connected'}
+                      </div>
+                    ) : (
+                      <div className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-500">n/a in India</div>
+                    )}
+                  </div>
+                  {meta.tiktokAvailable ? (
+                    tt?.connected ? (
+                      <div className="grid grid-cols-3 gap-2">
+                        <Metric label="Followers" value={fmt(tt.followers)} />
+                        <Metric label="Likes" value={fmt(tt.likes)} />
+                        <Metric label="Videos" value={fmt(tt.videos)} />
+                      </div>
+                    ) : (
+                      <div className="text-xs text-neutral-500">{loading ? 'Loading…' : 'Connect at /connect'}</div>
+                    )
+                  ) : (
+                    <div className="text-xs text-neutral-500">Banned in India — cross-posting via CapCut slideshow instead.</div>
+                  )}
+                  {meta.tiktokAvailable && tt?.error && (
+                    <div className="text-[10px] text-orange-300 mt-2 break-all">⚠ {tt.error}</div>
+                  )}
+                </div>
+
+                {/* COMBINED + PIPELINE */}
+                <div className="grid grid-cols-3 gap-2">
+                  <Metric
+                    label="Combined fans"
+                    value={fmt((ig?.followers ?? 0) + (tt?.followers ?? 0))}
+                    highlight
+                  />
+                  <Metric label="Posts done" value={`${donePosts}/${totalPosts}`} />
+                  <Metric label="Stories done" value={`${doneStories}/${totalStories}`} />
                 </div>
               </div>
             )
@@ -149,37 +228,9 @@ export default function AnalyticsView() {
         </div>
       </div>
 
-      {/* PLACEHOLDER CHARTS */}
-      <div className="bg-gradient-to-br from-neutral-900 to-neutral-950 border border-neutral-800 rounded-2xl p-6">
-        <h3 className="text-xl font-bold mb-2">📈 Coming after API connection</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-          {[
-            'Follower growth curve (30d)',
-            'Best-performing post types',
-            'Top 10 hashtags by reach',
-            'Peak posting times per creator',
-            'Story completion rates',
-            'Bio link click-through',
-            'Reels/Videos vs Photos reach',
-            'Cross-platform audience overlap',
-            'Affiliate revenue tracker'
-          ].map(item => (
-            <div key={item} className="bg-neutral-900 border border-neutral-800 rounded-lg p-4 text-sm text-neutral-300">
-              {item}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-6">
-        <div className="text-blue-300 font-semibold mb-2">🔗 Connect APIs to enable live analytics</div>
-        <div className="text-sm text-blue-100/80 mb-3">
-          Both Instagram Graph API and TikTok Content Posting API require app registration + approval.
-          Once connected, this dashboard becomes your command center for all 4 creators across both platforms.
-        </div>
-        <div className="text-xs text-blue-100/60">
-          Setup takes: 2 hrs human time + 3-14 days for platform approvals
-        </div>
+      <div className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-5 text-xs text-blue-100/70">
+        Reach / views / engagement come from the platform insights API and can lag ~24-48h for brand-new accounts.
+        TikTok follower stats need the <code>user.info.stats</code> scope — if the video-platform block shows ⚠, reconnect Mia + Ava with the updated scope.
       </div>
     </div>
   )
@@ -195,48 +246,11 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
   )
 }
 
-function PlatformCard({
-  name, icon, gradient, creators, note, connected
-}: {
-  name: string; icon: string; gradient: string; creators: number; note?: string; connected: number
-}) {
+function Metric({ label, value, highlight }: { label: string; value: string; highlight?: boolean }) {
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 relative overflow-hidden">
-      <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-5`} />
-      <div className="relative">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="text-3xl">{icon}</div>
-          <div>
-            <div className="text-lg font-bold">{name}</div>
-            {note && <div className="text-xs text-neutral-500">{note}</div>}
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div>
-            <div className="text-xs text-neutral-500 uppercase tracking-wider">Creators</div>
-            <div className="text-xl font-bold">{creators}</div>
-          </div>
-          <div>
-            <div className="text-xs text-neutral-500 uppercase tracking-wider">Connected</div>
-            <div className="text-xl font-bold">{connected} / {creators}</div>
-          </div>
-        </div>
-        <button className="mt-4 w-full text-xs bg-neutral-800 hover:bg-neutral-700 py-2 rounded transition-colors">
-          Connect API →
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function StatRow({ icon, label, value, muted }: { icon: string; label: string; value: string; muted?: boolean }) {
-  return (
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
-        <span className="text-sm">{icon}</span>
-        <span className={`text-xs ${muted ? 'text-neutral-500' : 'text-neutral-400'}`}>{label}</span>
-      </div>
-      <div className={`text-xs font-semibold ${muted ? 'text-neutral-500' : 'text-neutral-200'}`}>{value}</div>
+    <div className={`rounded-lg px-2 py-1.5 ${highlight ? 'bg-emerald-500/10 border border-emerald-500/30' : ''}`}>
+      <div className="text-[10px] text-neutral-500 uppercase tracking-wider truncate">{label}</div>
+      <div className={`text-sm font-bold ${highlight ? 'text-emerald-300' : 'text-neutral-100'}`}>{value}</div>
     </div>
   )
 }

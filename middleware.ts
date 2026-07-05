@@ -16,6 +16,8 @@ const PUBLIC_PREFIXES = [
   '/data-deletion',
   // Public brief viewer — Claude WebFetches this URL after Piyush pastes it
   '/brief/view',
+  // JPEG conversion proxy — Instagram's servers fetch this without our cookie
+  '/api/img',
   // Static assets + PWA
   '/_next',
   '/favicon',

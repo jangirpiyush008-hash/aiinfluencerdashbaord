@@ -28,7 +28,7 @@ export function buildTikTokOAuthLoginUrl(creator: Creator): string {
   const params = new URLSearchParams({
     client_key: clientKey,
     response_type: 'code',
-    scope: 'user.info.basic,user.info.profile,video.upload',
+    scope: 'user.info.basic,user.info.profile,user.info.stats,video.upload',
     redirect_uri: redirectUri,
     state: creator,
   })

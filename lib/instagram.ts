@@ -24,6 +24,23 @@ export function getIgUserIdForCreator(creator: Creator): string | null {
 
 const GRAPH = 'https://graph.instagram.com/v21.0'
 
+// IG's content API officially accepts JPEG only; Higgsfield CDN serves PNG.
+// Route every image through our public /api/img proxy, which re-encodes to JPEG.
+function toJpegProxyUrl(imageUrl: string): string {
+  // Already proxied or not one of our known PNG CDNs → pass through
+  if (imageUrl.includes('/api/img?url=')) return imageUrl
+  const base =
+    (process.env.PUBLIC_BASE_URL || '').trim().replace(/\/$/, '') ||
+    (() => {
+      try {
+        return new URL((process.env.IG_REDIRECT_URI || '').trim()).origin
+      } catch {
+        return 'https://influencerabcb.shop'
+      }
+    })()
+  return `${base}/api/img?url=${encodeURIComponent(imageUrl)}`
+}
+
 async function createContainer(
   igUserId: string,
   token: string,
@@ -96,7 +113,7 @@ export async function publishToInstagram(params: {
 
   if (kind === 'feed') {
     if (!imageUrl) throw new Error('feed post needs imageUrl')
-    creationId = await createContainer(igUserId, token, { image_url: imageUrl, caption })
+    creationId = await createContainer(igUserId, token, { image_url: toJpegProxyUrl(imageUrl), caption })
   } else if (kind === 'story') {
     if (!imageUrl && !videoUrl) throw new Error('story needs imageUrl or videoUrl')
     if (videoUrl) {
@@ -107,7 +124,7 @@ export async function publishToInstagram(params: {
     } else {
       creationId = await createContainer(igUserId, token, {
         media_type: 'STORIES',
-        image_url: imageUrl!,
+        image_url: toJpegProxyUrl(imageUrl!),
       })
     }
     // stories do not accept caption
@@ -118,7 +135,7 @@ export async function publishToInstagram(params: {
     // Create child containers (marked is_carousel_item) — wait for each to finish
     const childIds: string[] = []
     for (const url of imageUrls) {
-      const id = await createContainer(igUserId, token, { image_url: url, is_carousel_item: 'true' })
+      const id = await createContainer(igUserId, token, { image_url: toJpegProxyUrl(url), is_carousel_item: 'true' })
       await waitForContainerReady(id, token)
       childIds.push(id)
     }
