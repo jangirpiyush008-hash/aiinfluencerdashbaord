@@ -117,11 +117,11 @@ export default function AnalyticsView() {
         </div>
       )}
 
-      {/* PLATFORM TABS */}
-      <div className="flex gap-2">
-        <PlatformTabButton active={tab === 'instagram'} onClick={() => setTab('instagram')} icon="📷" label="Instagram" gradient="from-pink-500 to-orange-500" />
-        <PlatformTabButton active={tab === 'tiktok'} onClick={() => setTab('tiktok')} icon="🎵" label="TikTok" gradient="from-cyan-500 to-pink-500" />
+      {/* PLATFORM TABS — Combined first */}
+      <div className="flex gap-3 flex-wrap">
         <PlatformTabButton active={tab === 'combined'} onClick={() => setTab('combined')} icon="🌐" label="Combined" gradient="from-emerald-500 to-sky-500" />
+        <PlatformTabButton active={tab === 'tiktok'} onClick={() => setTab('tiktok')} icon="🎵" label="TikTok" gradient="from-cyan-500 to-pink-500" />
+        <PlatformTabButton active={tab === 'instagram'} onClick={() => setTab('instagram')} icon="📷" label="Instagram" gradient="from-pink-500 to-orange-500" />
       </div>
 
       {/* HERO STATS — adapt to selected platform */}
@@ -189,10 +189,19 @@ export default function AnalyticsView() {
 
                 {/* INSTAGRAM BLOCK */}
                 <div className={`rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3 ${tab === 'tiktok' ? 'hidden' : ''}`}>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between gap-2 mb-2">
                     <div className="text-xs font-semibold text-pink-300 uppercase tracking-wider">📷 Photo platform</div>
-                    <div className={`text-[10px] px-2 py-0.5 rounded-full ${ig?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
-                      {ig?.connected ? 'connected' : 'not connected'}
+                    <div className="flex items-center gap-1.5">
+                      <div className={`text-[10px] px-2 py-0.5 rounded-full ${ig?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
+                        {ig?.connected ? 'connected' : 'not connected'}
+                      </div>
+                      <a
+                        href={`/api/auth/start?platform=instagram&creator=${c}`}
+                        className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold"
+                        title={`Reconnect ${c}'s account — starts the login flow`}
+                      >
+                        {ig?.connected ? '↻ Reconnect' : '⚡ Connect'}
+                      </a>
                     </div>
                   </div>
                   {ig?.connected ? (
@@ -214,11 +223,20 @@ export default function AnalyticsView() {
 
                 {/* TIKTOK BLOCK */}
                 <div className={`rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3 ${tab === 'instagram' ? 'hidden' : ''}`}>
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between gap-2 mb-2">
                     <div className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">🎵 Video platform</div>
                     {meta.tiktokAvailable ? (
-                      <div className={`text-[10px] px-2 py-0.5 rounded-full ${tt?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
-                        {tt?.connected ? 'connected' : 'not connected'}
+                      <div className="flex items-center gap-1.5">
+                        <div className={`text-[10px] px-2 py-0.5 rounded-full ${tt?.connected && !tt?.error ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
+                          {tt?.connected && !tt?.error ? 'connected' : tt?.error ? 'token expired' : 'not connected'}
+                        </div>
+                        <a
+                          href={`/api/auth/start?platform=tiktok&creator=${c}`}
+                          className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold"
+                          title={`Reconnect ${c}'s account — starts the login flow with stats scope`}
+                        >
+                          {tt?.connected && !tt?.error ? '↻ Reconnect' : '⚡ Connect'}
+                        </a>
                       </div>
                     ) : (
                       <div className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-800 text-neutral-500">n/a in India</div>
@@ -276,13 +294,13 @@ function PlatformTabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-4 py-2.5 text-sm font-semibold rounded-full transition-all flex items-center gap-2 ${
+      className={`px-7 py-3.5 text-base font-bold rounded-2xl transition-all flex items-center gap-2.5 ${
         active
-          ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
-          : 'bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/5'
+          ? `bg-gradient-to-r ${gradient} text-white shadow-xl scale-105`
+          : 'bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/10'
       }`}
     >
-      <span>{icon}</span>
+      <span className="text-xl">{icon}</span>
       <span>{label}</span>
     </button>
   )
