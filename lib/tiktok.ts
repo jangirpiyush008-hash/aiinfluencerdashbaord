@@ -22,6 +22,39 @@ export function getTikTokOpenIdForCreator(creator: Creator): string | null {
   return process.env[CREATOR_OPEN_ID_KEY[creator]] || null
 }
 
+const CREATOR_REFRESH_KEY: Record<Creator, string> = {
+  Siya: 'TIKTOK_REFRESH_TOKEN_SIYA',
+  Kiara: 'TIKTOK_REFRESH_TOKEN_KIARA',
+  Mia: 'TIKTOK_REFRESH_TOKEN_MIA',
+  Ava: 'TIKTOK_REFRESH_TOKEN_AVA',
+}
+
+// TikTok access tokens expire after 24h; refresh tokens last 365 days.
+// If a refresh token is stored, exchange it for a fresh access token on demand.
+// Falls back to the static access token when no refresh token is configured.
+export async function getFreshTikTokToken(creator: Creator): Promise<string | null> {
+  const staticToken = getTikTokTokenForCreator(creator)
+  const refreshToken = process.env[CREATOR_REFRESH_KEY[creator]] || null
+  if (!refreshToken) return staticToken
+
+  try {
+    const res = await fetch('https://open.tiktokapis.com/v2/oauth/token/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_key: (process.env.TIKTOK_CLIENT_KEY || '').trim(),
+        client_secret: (process.env.TIKTOK_CLIENT_SECRET || '').trim(),
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      }),
+      cache: 'no-store',
+    })
+    const j = await res.json()
+    if (res.ok && j.access_token) return j.access_token as string
+  } catch {}
+  return staticToken
+}
+
 export function buildTikTokOAuthLoginUrl(creator: Creator): string {
   const clientKey = (process.env.TIKTOK_CLIENT_KEY || '').trim()
   const redirectUri = (process.env.TIKTOK_REDIRECT_URI || '').trim().replace(/\/$/, '')
@@ -50,7 +83,7 @@ export async function publishToTikTokDraft(params: {
   videoUrl: string
 }): Promise<{ publishId: string }> {
   const { creator, videoUrl } = params
-  const token = getTikTokTokenForCreator(creator)
+  const token = await getFreshTikTokToken(creator)
 
   if (!token) {
     throw new Error(`No TikTok token stored for ${creator}. Connect the account first at /connect/tiktok.`)

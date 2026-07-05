@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getTokenForCreator, getIgUserIdForCreator } from '@/lib/instagram'
-import { getTikTokTokenForCreator } from '@/lib/tiktok'
+import { getTokenForCreator } from '@/lib/instagram'
+import { getFreshTikTokToken } from '@/lib/tiktok'
 import type { Creator } from '@/lib/types'
 
 // Live analytics from the Instagram Graph API (+ TikTok user info where scoped).
@@ -35,7 +35,6 @@ type TtStats = {
 }
 
 async function igInsight(
-  igUserId: string,
   token: string,
   metric: string,
   totalValue: boolean
@@ -44,8 +43,10 @@ async function igInsight(
   const until = Math.floor(Date.now() / 1000)
   const extra = totalValue ? '&metric_type=total_value' : ''
   try {
+    // /me resolves to the token's own account — avoids "Object with ID does not
+    // exist" errors when the stored numeric ID differs from the professional ID.
     const res = await fetch(
-      `${GRAPH}/${igUserId}/insights?metric=${metric}&period=day&since=${since}&until=${until}${extra}&access_token=${token}`,
+      `${GRAPH}/me/insights?metric=${metric}&period=day&since=${since}&until=${until}${extra}&access_token=${token}`,
       { cache: 'no-store' }
     )
     const j = await res.json()
@@ -64,13 +65,14 @@ async function igInsight(
 
 async function fetchIg(creator: Creator): Promise<IgStats> {
   const token = getTokenForCreator(creator)
-  const igUserId = getIgUserIdForCreator(creator)
-  if (!token || !igUserId) return { connected: false }
+  if (!token) return { connected: false }
 
   const out: IgStats = { connected: true }
   try {
+    // /me instead of /{id} — the stored numeric ID can be the app-scoped one,
+    // which GET rejects with "Unsupported get request" even though publishing works.
     const res = await fetch(
-      `${GRAPH}/${igUserId}?fields=username,followers_count,follows_count,media_count&access_token=${token}`,
+      `${GRAPH}/me?fields=username,followers_count,follows_count,media_count&access_token=${token}`,
       { cache: 'no-store' }
     )
     const j = await res.json()
@@ -88,11 +90,11 @@ async function fetchIg(creator: Creator): Promise<IgStats> {
 
   // 7-day insights — each metric fetched independently; nulls tolerated
   const [reach, views, profileViews, engaged, interactions] = await Promise.all([
-    igInsight(igUserId, token, 'reach', false),
-    igInsight(igUserId, token, 'views', true),
-    igInsight(igUserId, token, 'profile_views', true),
-    igInsight(igUserId, token, 'accounts_engaged', true),
-    igInsight(igUserId, token, 'total_interactions', true),
+    igInsight(token, 'reach', false),
+    igInsight(token, 'views', true),
+    igInsight(token, 'profile_views', true),
+    igInsight(token, 'accounts_engaged', true),
+    igInsight(token, 'total_interactions', true),
   ])
   out.reach7d = reach
   out.views7d = views
@@ -103,7 +105,7 @@ async function fetchIg(creator: Creator): Promise<IgStats> {
 }
 
 async function fetchTikTok(creator: Creator): Promise<TtStats> {
-  const token = getTikTokTokenForCreator(creator)
+  const token = await getFreshTikTokToken(creator)
   if (!token) return { connected: false }
   const out: TtStats = { connected: true }
   try {
@@ -118,7 +120,10 @@ async function fetchTikTok(creator: Creator): Promise<TtStats> {
       out.likes = j.data.user.likes_count ?? null
       out.videos = j.data.user.video_count ?? null
     } else {
-      out.error = j?.error?.message || 'stats need user.info.stats scope'
+      const raw = j?.error?.message || 'stats unavailable'
+      out.error = raw.includes('access token is invalid')
+        ? 'Token expired — reconnect at /connect (also add TIKTOK_REFRESH_TOKEN_* env for auto-refresh)'
+        : raw
     }
   } catch (e) {
     out.error = e instanceof Error ? e.message : String(e)

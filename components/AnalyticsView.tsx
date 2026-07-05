@@ -38,10 +38,13 @@ type Analytics = {
 const fmt = (n: number | null | undefined) =>
   n === null || n === undefined ? '—' : n.toLocaleString()
 
+type PlatformTab = 'combined' | 'instagram' | 'tiktok'
+
 export default function AnalyticsView() {
   const [data, setData] = useState<Analytics | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [tab, setTab] = useState<PlatformTab>('combined')
 
   const load = useCallback(() => {
     setLoading(true)
@@ -114,12 +117,39 @@ export default function AnalyticsView() {
         </div>
       )}
 
-      {/* COMBINED HERO STATS */}
+      {/* PLATFORM TABS */}
+      <div className="flex gap-2">
+        <PlatformTabButton active={tab === 'instagram'} onClick={() => setTab('instagram')} icon="📷" label="Instagram" gradient="from-pink-500 to-orange-500" />
+        <PlatformTabButton active={tab === 'tiktok'} onClick={() => setTab('tiktok')} icon="🎵" label="TikTok" gradient="from-cyan-500 to-pink-500" />
+        <PlatformTabButton active={tab === 'combined'} onClick={() => setTab('combined')} icon="🌐" label="Combined" gradient="from-emerald-500 to-sky-500" />
+      </div>
+
+      {/* HERO STATS — adapt to selected platform */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard label="Total followers" value={totals ? fmt(totals.allFollowers) : '…'} sub={`IG ${totals ? fmt(totals.igFollowers) : '…'} · TT ${totals ? fmt(totals.ttFollowers) : '…'}`} />
-        <StatCard label="Reach last 7d" value={totals ? fmt(totals.reach7d) : '…'} sub="all accounts combined" />
-        <StatCard label="Views last 7d" value={totals ? fmt(totals.views7d) : '…'} sub="all accounts combined" />
-        <StatCard label="Interactions 7d" value={totals ? fmt(totals.interactions7d) : '…'} sub={`engaged: ${totals ? fmt(totals.engaged7d) : '…'}`} />
+        {tab === 'instagram' && (
+          <>
+            <StatCard label="IG followers" value={totals ? fmt(totals.igFollowers) : '…'} sub="all 4 accounts" />
+            <StatCard label="Reach last 7d" value={totals ? fmt(totals.reach7d) : '…'} sub="IG insights" />
+            <StatCard label="Views last 7d" value={totals ? fmt(totals.views7d) : '…'} sub="IG insights" />
+            <StatCard label="Interactions 7d" value={totals ? fmt(totals.interactions7d) : '…'} sub={`engaged: ${totals ? fmt(totals.engaged7d) : '…'}`} />
+          </>
+        )}
+        {tab === 'tiktok' && (
+          <>
+            <StatCard label="TT followers" value={totals ? fmt(totals.ttFollowers) : '…'} sub="Mia + Ava" />
+            <StatCard label="TT likes" value={data ? fmt(CREATORS.reduce((s, c) => s + (data.creators[c]?.tiktok.likes ?? 0), 0)) : '…'} sub="total hearts" />
+            <StatCard label="TT videos" value={data ? fmt(CREATORS.reduce((s, c) => s + (data.creators[c]?.tiktok.videos ?? 0), 0)) : '…'} sub="published" />
+            <StatCard label="Accounts live" value={data ? `${CREATORS.filter((c) => data.creators[c]?.tiktok.connected).length} / 2` : '…'} sub="tokens active" />
+          </>
+        )}
+        {tab === 'combined' && (
+          <>
+            <StatCard label="Total followers" value={totals ? fmt(totals.allFollowers) : '…'} sub={`IG ${totals ? fmt(totals.igFollowers) : '…'} · TT ${totals ? fmt(totals.ttFollowers) : '…'}`} />
+            <StatCard label="Reach last 7d" value={totals ? fmt(totals.reach7d) : '…'} sub="all accounts combined" />
+            <StatCard label="Views last 7d" value={totals ? fmt(totals.views7d) : '…'} sub="all accounts combined" />
+            <StatCard label="Interactions 7d" value={totals ? fmt(totals.interactions7d) : '…'} sub={`engaged: ${totals ? fmt(totals.engaged7d) : '…'}`} />
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -158,7 +188,7 @@ export default function AnalyticsView() {
                 )}
 
                 {/* INSTAGRAM BLOCK */}
-                <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3">
+                <div className={`rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3 ${tab === 'tiktok' ? 'hidden' : ''}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-xs font-semibold text-pink-300 uppercase tracking-wider">📷 Photo platform</div>
                     <div className={`text-[10px] px-2 py-0.5 rounded-full ${ig?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
@@ -183,7 +213,7 @@ export default function AnalyticsView() {
                 </div>
 
                 {/* TIKTOK BLOCK */}
-                <div className="rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3">
+                <div className={`rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3 ${tab === 'instagram' ? 'hidden' : ''}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">🎵 Video platform</div>
                     {meta.tiktokAvailable ? (
@@ -233,6 +263,26 @@ export default function AnalyticsView() {
         TikTok follower stats need the <code>user.info.stats</code> scope — if the video-platform block shows ⚠, reconnect Mia + Ava with the updated scope.
       </div>
     </div>
+  )
+}
+
+function PlatformTabButton({
+  active, onClick, icon, label, gradient
+}: {
+  active: boolean; onClick: () => void; icon: string; label: string; gradient: string
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-4 py-2.5 text-sm font-semibold rounded-full transition-all flex items-center gap-2 ${
+        active
+          ? `bg-gradient-to-r ${gradient} text-white shadow-lg`
+          : 'bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/5'
+      }`}
+    >
+      <span>{icon}</span>
+      <span>{label}</span>
+    </button>
   )
 }
 
