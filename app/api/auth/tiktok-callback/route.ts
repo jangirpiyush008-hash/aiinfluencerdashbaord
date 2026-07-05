@@ -76,15 +76,15 @@ export async function GET(req: NextRequest) {
     </div>
 
     ${refreshToken ? `
-    <div style="background:#111;padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid #333;opacity:0.7">
-      <div style="color:#888;font-size:12px;text-transform:uppercase;letter-spacing:1px">TIKTOK_REFRESH_${envSuffix} <span style="color:#666">(optional — for later refresh)</span></div>
+    <div style="background:#1a2e1a;padding:16px;border-radius:12px;margin-bottom:12px;border:1px solid #3a5">
+      <div style="color:#7c7;font-size:12px;text-transform:uppercase;letter-spacing:1px">TIKTOK_REFRESH_TOKEN_${envSuffix} <span style="color:#5a5">(IMPORTANT — enables 1-year auto-refresh, access tokens die in 24h)</span></div>
       <code style="display:block;background:#000;padding:8px;border-radius:6px;margin-top:4px;word-break:break-all;font-size:11px">${escape(refreshToken)}</code>
     </div>` : ''}
 
     <div style="margin-top:24px;padding:16px;background:#0a1e2a;border-left:3px solid #4af;border-radius:6px">
       <b>Next:</b>
       <ol style="margin-top:8px">
-        <li>Copy the two required values above</li>
+        <li>Copy ALL THREE values above (the refresh token keeps the connection alive for a year)</li>
         <li>Railway → Variables tab → Add Variable</li>
         <li>Wait ~1 min for Railway to redeploy</li>
         <li>Dashboard → open a Reel post → click <b>Push to TikTok</b> → video appears in ${escape(username)}'s TikTok drafts</li>
