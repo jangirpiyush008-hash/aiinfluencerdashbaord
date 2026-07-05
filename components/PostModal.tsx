@@ -73,12 +73,12 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
 
   const linkSuffix = affiliateLink ? `\n\n🛒 link in bio 👆` : ''
   const locationTag = post.location || `${meta.city}, ${meta.country}`
-  const locationLine = `\n📍 ${locationTag}`
 
-  const igCopy = `${post.caption}${locationLine}${linkSuffix}\n\n${post.hashtags.map(t => '#' + t).join(' ')}`
-  const trendingTags = ['viral','trending','explore','reels','instadaily','fyp','2026']
-  const igCopyTrending = `${post.caption}${locationLine}${linkSuffix}\n\n${[...post.hashtags, ...trendingTags].map(t => '#' + t).join(' ')}`
-  const tiktokCopy = `${post.caption}${locationLine}${linkSuffix}\n\n${post.hashtags.slice(0, 3).map(t => '#' + t).join(' ')} #fyp #foryou #viral`
+  // RULE: no location in captions (added via platform UI at post time). Exactly 5 hashtags.
+  const igCopy = `${post.caption}${linkSuffix}\n\n${post.hashtags.slice(0, 5).map(t => '#' + t).join(' ')}`
+  // Trending variant: 2 niche tags from the post + 3 high-volume trending = still exactly 5
+  const igCopyTrending = `${post.caption}${linkSuffix}\n\n${[...post.hashtags.slice(0, 2), 'viral', 'explore', 'instadaily'].map(t => '#' + t).join(' ')}`
+  const tiktokCopy = `${post.caption}${linkSuffix}\n\n${[...post.hashtags.slice(0, 3), 'fyp', 'foryou'].map(t => '#' + t).join(' ')}`
   const pinterestCopy = `TITLE: ${post.concept}\n\nDESCRIPTION: ${post.caption}\n\nDESTINATION LINK: ${affiliateLink || '(none — leave blank on Pinterest)'}\n\nHASHTAGS: ${post.hashtags.map(t => '#' + t).join(' ')}`
 
   const saveLink = () => {
@@ -387,11 +387,11 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
               </div>
             </div>
 
-            {/* LOCATION TAG */}
+            {/* LOCATION TAG — select in the platform UI when posting, never in the caption */}
             <div className="bg-purple-500/10 border border-purple-500/40 rounded-xl p-3 space-y-1">
-              <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold">📍 Location tag</div>
+              <div className="text-[10px] uppercase tracking-wider text-purple-300 font-semibold">📍 Location tag (select while posting — NOT in caption)</div>
               <div className="text-white text-sm">{locationTag}</div>
-              <div className="text-[10px] text-neutral-400">Add this via Instagram's "Add Location" sticker when posting — geo tags 2-3× local reach.</div>
+              <div className="text-[10px] text-neutral-400">Pick this in the app's location field when publishing — geo tags 2-3× local reach.</div>
             </div>
 
             {/* READY-TO-POST PREVIEW */}
