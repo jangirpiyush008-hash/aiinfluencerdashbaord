@@ -9,6 +9,7 @@ import VideoTemplatesView from '@/components/VideoTemplatesView'
 import StoryView from '@/components/StoryView'
 import StoriesView from '@/components/StoriesView'
 import AnalyticsView from '@/components/AnalyticsView'
+import { CalendarIcon, StoriesRingIcon, UsersIcon, BookIcon, FilmIcon, ChartIcon } from '@/components/BrandIcons'
 
 type Tab = 'calendar' | 'stories' | 'creators' | 'story' | 'videos' | 'analytics'
 
@@ -123,13 +124,15 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="flex gap-1.5 mt-3 sm:mt-5 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
-            <TabButton active={tab === 'calendar'} onClick={() => setTab('calendar')} icon="📅" label="Calendar" />
-            <TabButton active={tab === 'stories'} onClick={() => setTab('stories')} icon="📱" label="Stories" />
-            <TabButton active={tab === 'creators'} onClick={() => setTab('creators')} icon="👑" label="Creators" />
-            <TabButton active={tab === 'story'} onClick={() => setTab('story')} icon="📖" label="Story" />
-            <TabButton active={tab === 'videos'} onClick={() => setTab('videos')} icon="🎥" label="Videos" />
-            <TabButton active={tab === 'analytics'} onClick={() => setTab('analytics')} icon="📊" label="Stats" />
+          <div className="mt-3 sm:mt-5 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
+            <div className="inline-flex items-center gap-1 bg-neutral-900/80 border border-white/10 rounded-2xl p-1.5 backdrop-blur">
+              <TabButton active={tab === 'calendar'} onClick={() => setTab('calendar')} icon={<CalendarIcon className="w-4 h-4" />} label="Calendar" />
+              <TabButton active={tab === 'stories'} onClick={() => setTab('stories')} icon={<StoriesRingIcon className="w-4 h-4" />} label="Stories" />
+              <TabButton active={tab === 'creators'} onClick={() => setTab('creators')} icon={<UsersIcon className="w-4 h-4" />} label="Creators" />
+              <TabButton active={tab === 'story'} onClick={() => setTab('story')} icon={<BookIcon className="w-4 h-4" />} label="Story" />
+              <TabButton active={tab === 'videos'} onClick={() => setTab('videos')} icon={<FilmIcon className="w-4 h-4" />} label="Videos" />
+              <TabButton active={tab === 'analytics'} onClick={() => setTab('analytics')} icon={<ChartIcon className="w-4 h-4" />} label="Stats" />
+            </div>
           </div>
         </div>
       </header>
@@ -210,17 +213,17 @@ export default function Home() {
   )
 }
 
-function TabButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: string; label: string }) {
+function TabButton({ active, onClick, icon, label }: { active: boolean; onClick: () => void; icon: React.ReactNode; label: string }) {
   return (
     <button
       onClick={onClick}
-      className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-full transition-all flex items-center gap-1.5 shrink-0 ${
+      className={`px-3.5 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold rounded-xl transition-all flex items-center gap-2 shrink-0 ${
         active
-          ? 'bg-gradient-to-r from-pink-500 via-fuchsia-500 to-sky-500 text-white shadow-lg shadow-fuchsia-500/25'
-          : 'bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/5 hover:border-white/15 backdrop-blur'
+          ? 'bg-gradient-to-r from-pink-500 via-fuchsia-500 to-sky-500 text-white shadow-lg shadow-fuchsia-500/30'
+          : 'text-neutral-400 hover:text-neutral-100 hover:bg-white/5'
       }`}
     >
-      <span className="text-base">{icon}</span>
+      {icon}
       <span>{label}</span>
     </button>
   )

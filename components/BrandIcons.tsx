@@ -24,3 +24,61 @@ export function GlobeIcon({ className = 'w-5 h-5' }: { className?: string }) {
     </svg>
   )
 }
+
+// ─── Minimal stroke icons for main navigation ───────────────────────────────
+
+type IconProps = { className?: string }
+const stroke = { fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' } as const
+
+export function CalendarIcon({ className = 'w-4 h-4' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <rect x="3" y="4" width="18" height="18" rx="3" />
+      <path d="M16 2v4M8 2v4M3 10h18" />
+    </svg>
+  )
+}
+
+export function StoriesRingIcon({ className = 'w-4 h-4' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2a10 10 0 0 1 10 10M22 12a10 10 0 0 1-10 10M12 22A10 10 0 0 1 2 12" strokeDasharray="4 3" />
+    </svg>
+  )
+}
+
+export function UsersIcon({ className = 'w-4 h-4' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <circle cx="9" cy="8" r="4" />
+      <path d="M2 21v-1a7 7 0 0 1 14 0v1M16 4a4 4 0 0 1 0 8M22 21v-1a7 7 0 0 0-5-6.7" />
+    </svg>
+  )
+}
+
+export function BookIcon({ className = 'w-4 h-4' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <path d="M12 6c-2-1.8-5-2-8-2v15c3 0 6 .2 8 2 2-1.8 5-2 8-2V4c-3 0-6 .2-8 2zM12 6v15" />
+    </svg>
+  )
+}
+
+export function FilmIcon({ className = 'w-4 h-4' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <rect x="2" y="4" width="20" height="16" rx="3" />
+      <path d="M7 4v16M17 4v16M2 9h5M2 15h5M17 9h5M17 15h5" />
+    </svg>
+  )
+}
+
+export function ChartIcon({ className = 'w-4 h-4' }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" {...stroke} aria-hidden>
+      <path d="M3 3v18h18" />
+      <path d="M8 17V9M13 17V5M18 17v-6" />
+    </svg>
+  )
+}

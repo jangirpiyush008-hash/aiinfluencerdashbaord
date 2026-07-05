@@ -213,7 +213,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
         onClick={(e) => e.stopPropagation()}
       >
         {/* STACK NAV — jump between posts in the same creator/day stack */}
-        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-neutral-950 border-b border-neutral-800">
+        <div className="flex items-center flex-wrap gap-2 px-3 sm:px-4 py-2 bg-neutral-950 border-b border-neutral-800">
           {stack.posts.length > 1 && (
             <>
               <button

@@ -132,7 +132,7 @@ export default function AnalyticsView() {
   }, [data])
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8 space-y-10">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-5 sm:py-8 space-y-6 sm:space-y-10">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h2 className="text-3xl font-bold mb-2">📊 Analytics</h2>
@@ -323,7 +323,7 @@ export default function AnalyticsView() {
                   {meta.tiktokAvailable ? (
                     tt?.connected && !tt?.error ? (
                       <>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                           <Metric label="Followers" value={fmt(tt.followers)} />
                           <Metric label="Views" value={fmt(tt.totalViews)} />
                           <Metric label="Likes" value={fmt(tt.likes)} />
@@ -429,7 +429,7 @@ function PlatformTabButton({
   return (
     <button
       onClick={onClick}
-      className={`px-6 py-4 text-base font-bold rounded-2xl transition-all flex items-center justify-center gap-3 w-full ${
+      className={`px-2 sm:px-6 py-3 sm:py-4 text-sm sm:text-base font-bold rounded-2xl transition-all flex items-center justify-center gap-2 sm:gap-3 w-full ${
         active
           ? `bg-gradient-to-r ${gradient} text-white shadow-xl shadow-black/40 ring-1 ring-white/20 scale-[1.03]`
           : 'bg-neutral-900/70 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/10 hover:-translate-y-0.5'

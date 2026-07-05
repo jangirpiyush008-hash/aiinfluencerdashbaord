@@ -50,7 +50,7 @@ export default function StoriesView() {
   }, [filtered])
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-6 py-5 sm:py-8">
       <div className="mb-6">
         <div className="flex items-center justify-between gap-4 flex-wrap mb-2">
           <h2 className="text-2xl font-bold">📱 Daily Stories</h2>
@@ -244,7 +244,7 @@ function StoryStackModal({ group, onClose }: { group: StoryGroup; onClose: () =>
         onClick={(e) => e.stopPropagation()}
       >
         {/* TOP BAR — nav + mark-done (matches PostModal pattern) */}
-        <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-neutral-950 border-b border-neutral-800">
+        <div className="flex items-center flex-wrap gap-2 px-3 sm:px-4 py-2 bg-neutral-950 border-b border-neutral-800">
           <div className="text-xs text-neutral-400">
             Story <span className="text-white font-semibold">{idx + 1}</span> / {group.stories.length}
             <span className="mx-2 text-neutral-600">·</span>
