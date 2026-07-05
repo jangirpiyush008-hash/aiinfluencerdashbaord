@@ -163,7 +163,7 @@ export default function AnalyticsView() {
       <div>
         <h3 className="text-xl font-bold mb-4">By Creator — full detail</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {CREATORS.map((c) => {
+          {CREATORS.filter((c) => tab !== 'tiktok' || CREATOR_META[c].tiktokAvailable).map((c) => {
             const meta = CREATOR_META[c]
             const s = data?.creators?.[c]
             const ig = s?.instagram
@@ -225,20 +225,22 @@ export default function AnalyticsView() {
                     )}
                   </div>
                   {meta.tiktokAvailable ? (
-                    tt?.connected ? (
+                    tt?.connected && !tt?.error ? (
                       <div className="grid grid-cols-3 gap-2">
                         <Metric label="Followers" value={fmt(tt.followers)} />
                         <Metric label="Likes" value={fmt(tt.likes)} />
                         <Metric label="Videos" value={fmt(tt.videos)} />
+                      </div>
+                    ) : tt?.error ? (
+                      <div className="text-xs text-orange-300 leading-relaxed">
+                        ⚠ Token expired / missing stats permission.
+                        <span className="text-neutral-400"> Fix once: reconnect this account at /connect (now asks for stats scope), then save the returned refresh_token as TIKTOK_REFRESH_TOKEN_{c.toUpperCase()} in Railway → auto-refreshes for 1 year.</span>
                       </div>
                     ) : (
                       <div className="text-xs text-neutral-500">{loading ? 'Loading…' : 'Connect at /connect'}</div>
                     )
                   ) : (
                     <div className="text-xs text-neutral-500">Banned in India — cross-posting via CapCut slideshow instead.</div>
-                  )}
-                  {meta.tiktokAvailable && tt?.error && (
-                    <div className="text-[10px] text-orange-300 mt-2 break-all">⚠ {tt.error}</div>
                   )}
                 </div>
 
