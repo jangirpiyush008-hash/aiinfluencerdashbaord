@@ -21,13 +21,28 @@ type IgStats = {
   error?: string
 }
 
+type TtVideo = {
+  id: string
+  title: string
+  cover: string
+  shareUrl: string
+  views: number
+  likes: number
+  comments: number
+  shares: number
+  createTime: number
+}
+
 type TtStats = {
   connected: boolean
   displayName?: string
   followers?: number | null
   likes?: number | null
   videos?: number | null
+  videoList?: TtVideo[]
+  totalViews?: number | null
   error?: string
+  videoListError?: string
 }
 
 type Analytics = {
@@ -137,9 +152,9 @@ export default function AnalyticsView() {
         {tab === 'tiktok' && (
           <>
             <StatCard label="TT followers" value={totals ? fmt(totals.ttFollowers) : '…'} sub="Mia + Ava" />
+            <StatCard label="TT views" value={data ? fmt(CREATORS.reduce((s, c) => s + (data.creators[c]?.tiktok.totalViews ?? 0), 0)) : '…'} sub="across all videos" />
             <StatCard label="TT likes" value={data ? fmt(CREATORS.reduce((s, c) => s + (data.creators[c]?.tiktok.likes ?? 0), 0)) : '…'} sub="total hearts" />
-            <StatCard label="TT videos" value={data ? fmt(CREATORS.reduce((s, c) => s + (data.creators[c]?.tiktok.videos ?? 0), 0)) : '…'} sub="published" />
-            <StatCard label="Accounts live" value={data ? `${CREATORS.filter((c) => data.creators[c]?.tiktok.connected).length} / 2` : '…'} sub="tokens active" />
+            <StatCard label="TT videos" value={data ? fmt(CREATORS.reduce((s, c) => s + (data.creators[c]?.tiktok.videos ?? data.creators[c]?.tiktok.videoList?.length ?? 0), 0)) : '…'} sub="published" />
           </>
         )}
         {tab === 'combined' && (
@@ -244,11 +259,44 @@ export default function AnalyticsView() {
                   </div>
                   {meta.tiktokAvailable ? (
                     tt?.connected && !tt?.error ? (
-                      <div className="grid grid-cols-3 gap-2">
-                        <Metric label="Followers" value={fmt(tt.followers)} />
-                        <Metric label="Likes" value={fmt(tt.likes)} />
-                        <Metric label="Videos" value={fmt(tt.videos)} />
-                      </div>
+                      <>
+                        <div className="grid grid-cols-4 gap-2">
+                          <Metric label="Followers" value={fmt(tt.followers)} />
+                          <Metric label="Views" value={fmt(tt.totalViews)} />
+                          <Metric label="Likes" value={fmt(tt.likes)} />
+                          <Metric label="Videos" value={fmt(tt.videos ?? tt.videoList?.length ?? null)} />
+                        </div>
+                        {tt.videoList && tt.videoList.length > 0 && (
+                          <div className="mt-3 space-y-1.5">
+                            <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Recent videos</div>
+                            {tt.videoList.slice(0, 6).map((v) => (
+                              <a
+                                key={v.id}
+                                href={v.shareUrl || '#'}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2.5 bg-neutral-900 hover:bg-neutral-800 rounded-lg px-2 py-1.5 transition-colors"
+                              >
+                                {v.cover ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img src={v.cover} alt="" className="w-8 h-11 object-cover rounded" />
+                                ) : (
+                                  <div className="w-8 h-11 bg-neutral-800 rounded flex items-center justify-center text-xs">🎬</div>
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <div className="text-xs text-neutral-200 truncate">{v.title || 'Untitled'}</div>
+                                  <div className="text-[10px] text-neutral-500">
+                                    👁 {fmt(v.views)} · ❤️ {fmt(v.likes)} · 💬 {fmt(v.comments)} · ↗ {fmt(v.shares)}
+                                  </div>
+                                </div>
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                        {tt.videoListError && (
+                          <div className="text-[10px] text-orange-300 mt-2 leading-relaxed">⚠ {tt.videoListError}</div>
+                        )}
+                      </>
                     ) : tt?.error ? (
                       <div className="text-xs text-orange-300 leading-relaxed">
                         ⚠ Token expired / missing stats permission.

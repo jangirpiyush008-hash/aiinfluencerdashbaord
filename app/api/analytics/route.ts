@@ -25,13 +25,28 @@ type IgStats = {
   error?: string
 }
 
+type TtVideo = {
+  id: string
+  title: string
+  cover: string
+  shareUrl: string
+  views: number
+  likes: number
+  comments: number
+  shares: number
+  createTime: number
+}
+
 type TtStats = {
   connected: boolean
   displayName?: string
   followers?: number | null
   likes?: number | null
   videos?: number | null
+  videoList?: TtVideo[]
+  totalViews?: number | null
   error?: string
+  videoListError?: string
 }
 
 async function igInsight(
@@ -127,6 +142,41 @@ async function fetchTikTok(creator: Creator): Promise<TtStats> {
     }
   } catch (e) {
     out.error = e instanceof Error ? e.message : String(e)
+  }
+
+  // Per-video stats (views/likes/comments/shares) — needs the video.list scope
+  try {
+    const res = await fetch(
+      'https://open.tiktokapis.com/v2/video/list/?fields=id,title,cover_image_url,share_url,view_count,like_count,comment_count,share_count,create_time',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ max_count: 20 }),
+        cache: 'no-store',
+      }
+    )
+    const j = await res.json()
+    if (res.ok && Array.isArray(j.data?.videos)) {
+      out.videoList = j.data.videos.map((v: Record<string, unknown>) => ({
+        id: String(v.id ?? ''),
+        title: String(v.title ?? ''),
+        cover: String(v.cover_image_url ?? ''),
+        shareUrl: String(v.share_url ?? ''),
+        views: Number(v.view_count ?? 0),
+        likes: Number(v.like_count ?? 0),
+        comments: Number(v.comment_count ?? 0),
+        shares: Number(v.share_count ?? 0),
+        createTime: Number(v.create_time ?? 0),
+      }))
+      out.totalViews = out.videoList!.reduce((s, v) => s + v.views, 0)
+    } else {
+      const raw = j?.error?.message || 'video list unavailable'
+      out.videoListError = raw.includes('scope')
+        ? 'Per-video stats need the video.list scope — enable it in the developer portal, add it to TIKTOK_SCOPES, reconnect.'
+        : raw
+    }
+  } catch (e) {
+    out.videoListError = e instanceof Error ? e.message : String(e)
   }
   return out
 }
