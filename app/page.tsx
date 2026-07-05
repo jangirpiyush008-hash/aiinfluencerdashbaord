@@ -100,22 +100,25 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="flex gap-2 items-center mt-3 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
+          <div className="flex gap-2.5 items-center mt-3 -mx-3 sm:mx-0 px-3 sm:px-0 overflow-x-auto no-scrollbar">
             {CREATORS.map((c) => (
               <button
                 key={c}
                 onClick={() => { setTab('calendar'); setSelectedCreator(c) }}
-                className="text-xs bg-neutral-900/60 hover:bg-neutral-800/80 border border-white/5 hover:border-white/15 rounded-lg px-3 py-2 flex items-center gap-2 transition-all shrink-0 hover:-translate-y-0.5"
+                className="bg-neutral-900/60 hover:bg-neutral-800/80 border border-white/5 hover:border-white/20 rounded-full pl-1.5 pr-4 py-1.5 flex items-center gap-2.5 transition-all shrink-0 hover:-translate-y-0.5"
                 style={{
-                  boxShadow: `inset 0 0 0 1px ${CREATOR_META[c].color}22, 0 4px 12px -8px ${CREATOR_META[c].color}66`,
+                  boxShadow: `inset 0 0 0 1px ${CREATOR_META[c].color}33, 0 6px 16px -8px ${CREATOR_META[c].color}88`,
                 }}
               >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ background: CREATOR_META[c].color, boxShadow: `0 0 10px ${CREATOR_META[c].color}` }}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={CREATOR_META[c].anchorImageUrl}
+                  alt={c}
+                  className="w-8 h-8 rounded-full object-cover ring-2"
+                  style={{ ['--tw-ring-color' as string]: CREATOR_META[c].color }}
                 />
-                <span className="font-semibold">{c}</span>
-                <span className="text-neutral-500">{perCreator[c]}</span>
+                <span className="text-sm font-semibold">{c}</span>
+                <span className="text-xs text-neutral-500">{perCreator[c]}</span>
               </button>
             ))}
           </div>
@@ -174,10 +177,12 @@ export default function Home() {
                 {grouped.map(([date, stacks]) => (
                   <section key={date} className="fade-in-up">
                     <div className="mb-3 sm:mb-4 flex items-center gap-3">
-                      <div className="h-6 w-1 rounded-full bg-gradient-to-b from-pink-500 via-fuchsia-500 to-sky-500" />
-                      <h2 className="text-base sm:text-lg font-semibold text-neutral-100">{date}</h2>
-                      <span className="text-xs sm:text-sm text-neutral-500">{stacks[0].day}</span>
-                      <span className="text-[11px] sm:text-xs text-neutral-500 ml-auto bg-white/5 border border-white/10 rounded-full px-2.5 py-0.5">
+                      <div className="h-8 w-1.5 rounded-full bg-gradient-to-b from-pink-500 via-fuchsia-500 to-sky-500" />
+                      <h2 className="text-lg sm:text-xl font-bold text-neutral-50 tracking-tight">{date}</h2>
+                      <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-fuchsia-300 bg-fuchsia-500/10 border border-fuchsia-500/25 rounded-full px-2.5 py-0.5">
+                        {stacks[0].day}
+                      </span>
+                      <span className="text-[11px] sm:text-xs text-neutral-400 ml-auto bg-white/5 border border-white/10 rounded-full px-3 py-1">
                         {stacks.length} creator{stacks.length > 1 ? 's' : ''} · {stacks.reduce((n, s) => n + s.posts.length, 0)} posts
                       </span>
                     </div>

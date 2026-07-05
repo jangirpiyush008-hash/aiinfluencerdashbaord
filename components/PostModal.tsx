@@ -2,6 +2,7 @@
 import { Post, CREATOR_META } from '@/lib/types'
 import { useEffect, useState } from 'react'
 import { isDone, setDone } from '@/lib/doneState'
+import { InstagramIcon, TikTokIcon } from '@/components/BrandIcons'
 import type { PostStack } from '@/app/page'
 
 export default function PostModal({ stack, onClose }: { stack: PostStack | null; onClose: () => void }) {
@@ -547,7 +548,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                 className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-pink-500 to-orange-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
               >
                 <span className="flex items-center gap-2">
-                  <span className="text-lg">📷</span>
+                  <InstagramIcon className="w-5 h-5" />
                   <span>{publishing ? 'Publishing…' : 'Auto-publish to Instagram'}</span>
                 </span>
                 <span className="text-xs bg-white/20 px-2 py-1 rounded">
@@ -576,7 +577,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                       className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 disabled:opacity-50 text-white px-4 py-3 rounded-xl font-semibold transition-all"
                     >
                       <span className="flex items-center gap-2">
-                        <span className="text-lg">🎵</span>
+                        <TikTokIcon className="w-5 h-5" />
                         <span>{publishingTT ? 'Uploading to drafts…' : 'Push to TikTok drafts (auto)'}</span>
                       </span>
                       <span className="text-xs bg-white/20 px-2 py-1 rounded">{publishingTT ? '⏳' : 'Draft'}</span>
@@ -593,7 +594,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                     className="w-full flex items-center justify-between gap-3 bg-gradient-to-r from-cyan-500 to-pink-500 hover:opacity-90 text-white px-4 py-3 rounded-xl font-semibold transition-all"
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-lg">🎵</span>
+                      <TikTokIcon className="w-5 h-5" />
                       <span>Push to TikTok (photos → auto-slideshow)</span>
                     </span>
                     <span className="text-xs bg-white/20 px-2 py-1 rounded">
@@ -608,7 +609,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                   title="TikTok banned in India for Siya/Kiara — use CapCut Photo→Video Slideshow as backup (same output)."
                 >
                   <span className="flex items-center gap-2">
-                    <span className="text-lg">🎵</span>
+                    <TikTokIcon className="w-5 h-5" />
                     <span>Push via CapCut Slideshow ({post.creator} = India)</span>
                   </span>
                   <span className="text-xs bg-white/10 px-2 py-1 rounded">

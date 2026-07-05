@@ -3,6 +3,7 @@ import { CREATOR_META, Creator } from '@/lib/types'
 import { CALENDAR } from '@/lib/calendar'
 import { STORIES } from '@/lib/stories'
 import { isDone } from '@/lib/doneState'
+import { InstagramIcon, TikTokIcon, GlobeIcon } from '@/components/BrandIcons'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
@@ -158,10 +159,10 @@ export default function AnalyticsView() {
       )}
 
       {/* PLATFORM TABS — Combined first */}
-      <div className="flex gap-3 flex-wrap">
-        <PlatformTabButton active={tab === 'combined'} onClick={() => setTab('combined')} icon="🌐" label="Combined" gradient="from-emerald-500 to-sky-500" />
-        <PlatformTabButton active={tab === 'tiktok'} onClick={() => setTab('tiktok')} icon="🎵" label="TikTok" gradient="from-cyan-500 to-pink-500" />
-        <PlatformTabButton active={tab === 'instagram'} onClick={() => setTab('instagram')} icon="📷" label="Instagram" gradient="from-pink-500 to-orange-500" />
+      <div className="grid grid-cols-3 gap-3 max-w-2xl">
+        <PlatformTabButton active={tab === 'combined'} onClick={() => setTab('combined')} icon={<GlobeIcon className="w-6 h-6" />} label="Combined" gradient="from-emerald-500 to-sky-500" />
+        <PlatformTabButton active={tab === 'tiktok'} onClick={() => setTab('tiktok')} icon={<TikTokIcon className="w-6 h-6" />} label="TikTok" gradient="from-[#25F4EE] via-neutral-900 to-[#FE2C55]" />
+        <PlatformTabButton active={tab === 'instagram'} onClick={() => setTab('instagram')} icon={<InstagramIcon className="w-6 h-6" />} label="Instagram" gradient="from-[#F58529] via-[#DD2A7B] to-[#8134AF]" />
       </div>
 
       {/* HERO STATS — adapt to selected platform */}
@@ -219,18 +220,25 @@ export default function AnalyticsView() {
                 className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5"
                 style={{ borderTopColor: meta.color, borderTopWidth: 3 }}
               >
-                <div className="flex items-baseline justify-between mb-1">
-                  <div className="text-lg font-bold" style={{ color: meta.color }}>{c}</div>
+                <div className="flex items-center gap-3 mb-3">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={meta.anchorImageUrl}
+                    alt={c}
+                    className="w-12 h-12 rounded-full object-cover ring-2"
+                    style={{ ['--tw-ring-color' as string]: meta.color }}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="text-lg font-bold leading-tight" style={{ color: meta.color }}>{c}</div>
+                    {ig?.username && <div className="text-xs text-neutral-400 truncate">@{ig.username}</div>}
+                  </div>
                   <div className="text-xs text-neutral-500">{meta.city}</div>
                 </div>
-                {ig?.username && (
-                  <div className="text-xs text-neutral-400 mb-3">@{ig.username}</div>
-                )}
 
                 {/* INSTAGRAM BLOCK */}
                 <div className={`rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3 ${tab === 'tiktok' ? 'hidden' : ''}`}>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="text-xs font-semibold text-pink-300 uppercase tracking-wider">📷 Photo platform</div>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-pink-300 uppercase tracking-wider"><InstagramIcon className="w-4 h-4" /> Instagram</div>
                     <div className="flex items-center gap-1.5">
                       <div className={`text-[10px] px-2 py-0.5 rounded-full ${ig?.connected ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
                         {ig?.connected ? 'connected' : 'not connected'}
@@ -293,7 +301,7 @@ export default function AnalyticsView() {
                 {/* TIKTOK BLOCK */}
                 <div className={`rounded-xl bg-neutral-950 border border-neutral-800 p-3 mb-3 ${tab === 'instagram' ? 'hidden' : ''}`}>
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="text-xs font-semibold text-cyan-300 uppercase tracking-wider">🎵 Video platform</div>
+                    <div className="flex items-center gap-1.5 text-xs font-semibold text-cyan-300 uppercase tracking-wider"><TikTokIcon className="w-4 h-4" /> TikTok</div>
                     {meta.tiktokAvailable ? (
                       <div className="flex items-center gap-1.5">
                         <div className={`text-[10px] px-2 py-0.5 rounded-full ${tt?.connected && !tt?.error ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
@@ -391,18 +399,18 @@ export default function AnalyticsView() {
 function PlatformTabButton({
   active, onClick, icon, label, gradient
 }: {
-  active: boolean; onClick: () => void; icon: string; label: string; gradient: string
+  active: boolean; onClick: () => void; icon: React.ReactNode; label: string; gradient: string
 }) {
   return (
     <button
       onClick={onClick}
-      className={`px-7 py-3.5 text-base font-bold rounded-2xl transition-all flex items-center gap-2.5 ${
+      className={`px-6 py-4 text-base font-bold rounded-2xl transition-all flex items-center justify-center gap-3 w-full ${
         active
-          ? `bg-gradient-to-r ${gradient} text-white shadow-xl scale-105`
-          : 'bg-neutral-900/60 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/10'
+          ? `bg-gradient-to-r ${gradient} text-white shadow-xl shadow-black/40 ring-1 ring-white/20 scale-[1.03]`
+          : 'bg-neutral-900/70 text-neutral-400 hover:bg-neutral-800/80 hover:text-neutral-100 border border-white/10 hover:-translate-y-0.5'
       }`}
     >
-      <span className="text-xl">{icon}</span>
+      {icon}
       <span>{label}</span>
     </button>
   )
