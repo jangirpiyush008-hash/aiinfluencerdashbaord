@@ -11,6 +11,19 @@ export const dynamic = 'force-dynamic'
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 const GRAPH = 'https://graph.instagram.com/v21.0'
 
+type IgMedia = {
+  id: string
+  caption: string
+  mediaType: string
+  thumb: string
+  permalink: string
+  likes: number
+  comments: number
+  views: number | null
+  reach: number | null
+  timestamp: string
+}
+
 type IgStats = {
   connected: boolean
   username?: string
@@ -22,6 +35,7 @@ type IgStats = {
   profileViews7d?: number | null
   accountsEngaged7d?: number | null
   interactions7d?: number | null
+  mediaList?: IgMedia[]
   error?: string
 }
 
@@ -116,6 +130,49 @@ async function fetchIg(creator: Creator): Promise<IgStats> {
   out.profileViews7d = profileViews
   out.accountsEngaged7d = engaged
   out.interactions7d = interactions
+
+  // Recent posts with per-post stats (thumbnail, likes, comments + views/reach insights)
+  try {
+    const res = await fetch(
+      `${GRAPH}/me/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp,like_count,comments_count&limit=6&access_token=${token}`,
+      { cache: 'no-store' }
+    )
+    const j = await res.json()
+    if (res.ok && Array.isArray(j.data)) {
+      out.mediaList = await Promise.all(
+        j.data.map(async (m: Record<string, unknown>): Promise<IgMedia> => {
+          let views: number | null = null
+          let reachN: number | null = null
+          try {
+            const ir = await fetch(
+              `${GRAPH}/${m.id}/insights?metric=views,reach&access_token=${token}`,
+              { cache: 'no-store' }
+            )
+            const ij = await ir.json()
+            if (ir.ok && Array.isArray(ij.data)) {
+              for (const d of ij.data) {
+                const val = d.values?.[0]?.value ?? d.total_value?.value ?? null
+                if (d.name === 'views') views = val
+                if (d.name === 'reach') reachN = val
+              }
+            }
+          } catch {}
+          return {
+            id: String(m.id ?? ''),
+            caption: String(m.caption ?? '').slice(0, 120),
+            mediaType: String(m.media_type ?? ''),
+            thumb: String(m.thumbnail_url ?? m.media_url ?? ''),
+            permalink: String(m.permalink ?? ''),
+            likes: Number(m.like_count ?? 0),
+            comments: Number(m.comments_count ?? 0),
+            views,
+            reach: reachN,
+            timestamp: String(m.timestamp ?? ''),
+          }
+        })
+      )
+    }
+  } catch {}
   return out
 }
 

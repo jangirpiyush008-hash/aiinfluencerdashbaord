@@ -7,6 +7,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 
+type IgMedia = {
+  id: string
+  caption: string
+  mediaType: string
+  thumb: string
+  permalink: string
+  likes: number
+  comments: number
+  views: number | null
+  reach: number | null
+  timestamp: string
+}
+
 type IgStats = {
   connected: boolean
   username?: string
@@ -18,6 +31,7 @@ type IgStats = {
   profileViews7d?: number | null
   accountsEngaged7d?: number | null
   interactions7d?: number | null
+  mediaList?: IgMedia[]
   error?: string
 }
 
@@ -231,16 +245,45 @@ export default function AnalyticsView() {
                     </div>
                   </div>
                   {ig?.connected ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      <Metric label="Followers" value={fmt(ig.followers)} />
-                      <Metric label="Following" value={fmt(ig.following)} />
-                      <Metric label="Posts" value={fmt(ig.mediaCount)} />
-                      <Metric label="Reach 7d" value={fmt(ig.reach7d)} />
-                      <Metric label="Views 7d" value={fmt(ig.views7d)} />
-                      <Metric label="Profile views" value={fmt(ig.profileViews7d)} />
-                      <Metric label="Engaged 7d" value={fmt(ig.accountsEngaged7d)} />
-                      <Metric label="Interactions" value={fmt(ig.interactions7d)} />
-                    </div>
+                    <>
+                      <div className="grid grid-cols-3 gap-2">
+                        <Metric label="Followers" value={fmt(ig.followers)} />
+                        <Metric label="Following" value={fmt(ig.following)} />
+                        <Metric label="Posts" value={fmt(ig.mediaCount)} />
+                        <Metric label="Reach 7d" value={fmt(ig.reach7d)} />
+                        <Metric label="Views 7d" value={fmt(ig.views7d)} />
+                        <Metric label="Profile views" value={fmt(ig.profileViews7d)} />
+                        <Metric label="Engaged 7d" value={fmt(ig.accountsEngaged7d)} />
+                        <Metric label="Interactions" value={fmt(ig.interactions7d)} />
+                      </div>
+                      {ig.mediaList && ig.mediaList.length > 0 && (
+                        <div className="mt-3 space-y-1.5">
+                          <div className="text-[10px] text-neutral-500 uppercase tracking-wider">Recent posts</div>
+                          {ig.mediaList.map((p) => (
+                            <a
+                              key={p.id}
+                              href={p.permalink || '#'}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="flex items-center gap-2.5 bg-neutral-900 hover:bg-neutral-800 rounded-lg px-2 py-1.5 transition-colors"
+                            >
+                              {p.thumb ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={p.thumb} alt="" className="w-8 h-10 object-cover rounded" />
+                              ) : (
+                                <div className="w-8 h-10 bg-neutral-800 rounded flex items-center justify-center text-xs">📷</div>
+                              )}
+                              <div className="flex-1 min-w-0">
+                                <div className="text-xs text-neutral-200 truncate">{p.caption || p.mediaType.toLowerCase()}</div>
+                                <div className="text-[10px] text-neutral-500">
+                                  👁 {fmt(p.views)} · reach {fmt(p.reach)} · ❤️ {fmt(p.likes)} · 💬 {fmt(p.comments)}
+                                </div>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="text-xs text-neutral-500">{loading ? 'Loading…' : 'Connect at /connect'}</div>
                   )}
