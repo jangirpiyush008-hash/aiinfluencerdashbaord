@@ -99,8 +99,8 @@ export type CreatorMeta = {
 
 export const CREATOR_META: Record<Creator, CreatorMeta> = {
   Siya: {
-    handle: '@_siyasharmaofficial',
-    instagramUrl: 'https://www.instagram.com/_siyasharmaofficial/',
+    handle: '@siyasharma_official01',
+    instagramUrl: 'https://www.instagram.com/siyasharma_official01/',
     city: 'Bangalore',
     country: 'India',
     niche: 'Beauty + Fashion',
