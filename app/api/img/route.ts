@@ -16,11 +16,13 @@ const ALLOWED_HOSTS = [
   'res.cloudinary.com',
 ]
 
-// A row/column counts as a "letterbox band" if it is overwhelmingly near-black.
-// The fake chrome bars are pure #000; real photos almost never have full-width
-// pure-black rows, so this only ever fires on genuine UI bands.
-const DARK_LUMA = 22        // 0-255; below this a pixel is "black"
-const DARK_FRACTION = 0.92  // ≥92% of the line must be black to trim it
+// A row/column counts as a "letterbox band" if it is mostly dark. The fake
+// chrome bars are near-black but carry white username text + a colored profile
+// icon, so a strict pure-black test misses them — we allow up to ~22% bright
+// pixels (the text/icons) and still call the row a band. Real photos are far
+// brighter at their edges, so clean images are never trimmed.
+const DARK_LUMA = 48        // 0-255; below this a pixel counts as "dark"
+const DARK_FRACTION = 0.78  // ≥78% of the line must be dark to trim it
 const MAX_TRIM = 0.16       // never remove more than 16% from any single side
 
 async function autoTrimBands(buf: Buffer): Promise<Buffer> {
