@@ -24,6 +24,19 @@ export function getIgUserIdForCreator(creator: Creator): string | null {
 
 const GRAPH = 'https://graph.instagram.com/v21.0'
 
+// Instagram Login hands back TWO ids: an app-scoped `id` and the publishable
+// `user_id`. The one stored in env can be the wrong one, which makes
+// POST /{id}/media fail with "object does not exist" (code 100, subcode 33).
+// Resolve the correct publishable id straight from the token so it's always right.
+async function resolvePublishId(token: string, fallback: string): Promise<string> {
+  try {
+    const res = await fetch(`${GRAPH}/me?fields=user_id,id&access_token=${token}`, { cache: 'no-store' })
+    const j = await res.json()
+    if (res.ok && (j.user_id || j.id)) return String(j.user_id || j.id)
+  } catch {}
+  return fallback
+}
+
 // IG's content API officially accepts JPEG only; Higgsfield CDN serves PNG.
 // Route every image through our public /api/img proxy, which re-encodes to JPEG.
 function toJpegProxyUrl(imageUrl: string): string {
@@ -104,10 +117,14 @@ export async function publishToInstagram(params: {
 }): Promise<{ postId: string; permalink: string }> {
   const { creator, kind, caption = '', imageUrl, imageUrls, videoUrl } = params
   const token = getTokenForCreator(creator)
-  const igUserId = getIgUserIdForCreator(creator)
+  const storedId = getIgUserIdForCreator(creator)
 
   if (!token) throw new Error(`No Instagram token stored for ${creator}. Connect the account first at /connect.`)
-  if (!igUserId) throw new Error(`No Instagram user ID stored for ${creator}. Reconnect the account.`)
+  if (!storedId) throw new Error(`No Instagram user ID stored for ${creator}. Reconnect the account.`)
+
+  // Always resolve the correct publishable id from the token (the stored one may
+  // be the wrong id type from OAuth and cause "object does not exist" on publish).
+  const igUserId = await resolvePublishId(token, storedId)
 
   let creationId: string
 
