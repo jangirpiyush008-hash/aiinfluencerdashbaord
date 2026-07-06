@@ -1,6 +1,7 @@
 'use client'
 import { CREATOR_META } from '@/lib/types'
 import { isDone } from '@/lib/doneState'
+import { cleanImg } from '@/lib/img'
 import { InstagramIcon, TikTokIcon } from '@/components/BrandIcons'
 import type { PostStack } from '@/app/page'
 
@@ -26,7 +27,7 @@ export default function PostStackCard({ stack, onClick }: { stack: PostStack; on
       <div className="aspect-[4/5] relative bg-neutral-950 flex items-center justify-center overflow-hidden">
         {cover.imageUrl ? (
           <img
-            src={cover.imageUrl}
+            src={cleanImg(cover.imageUrl)}
             alt={cover.concept}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
           />

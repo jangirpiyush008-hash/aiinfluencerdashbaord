@@ -2,6 +2,7 @@
 import { Post, CREATOR_META } from '@/lib/types'
 import { useEffect, useState } from 'react'
 import { isDone, setDone } from '@/lib/doneState'
+import { cleanImg } from '@/lib/img'
 import { InstagramIcon, TikTokIcon } from '@/components/BrandIcons'
 import type { PostStack } from '@/app/page'
 
@@ -280,7 +281,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
               }
               return (
                 <>
-                  <img key={previewUrls[idx]} src={previewUrls[idx]} alt={`${post.concept} slide ${idx + 1}`} className="max-w-full max-h-[600px] object-contain rounded-lg" />
+                  <img key={previewUrls[idx]} src={cleanImg(previewUrls[idx])} alt={`${post.concept} slide ${idx + 1}`} className="max-w-full max-h-[600px] object-contain rounded-lg" />
                   {previewUrls.length > 1 && (
                     <>
                       <button
@@ -446,7 +447,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                 try {
                   for (let i = 0; i < downloadUrls.length; i++) {
                     const url = downloadUrls[i]
-                    const res = await fetch(url)
+                    const res = await fetch(cleanImg(url))
                     const blob = await res.blob()
                     const objUrl = URL.createObjectURL(blob)
                     const a = document.createElement('a')
@@ -508,7 +509,7 @@ export default function PostModal({ stack, onClose }: { stack: PostStack | null;
                   <div className="flex gap-2 overflow-x-auto pb-1">
                     {parsedSlideUrls.slice(0, 10).map((url, i) => (
                       <div key={i} className="flex-shrink-0 relative">
-                        <img src={url} alt={`Slide ${i + 1}`} className="h-16 w-16 object-cover rounded border border-neutral-700" onError={(e) => (e.currentTarget.style.opacity = '0.3')} />
+                        <img src={cleanImg(url)} alt={`Slide ${i + 1}`} className="h-16 w-16 object-cover rounded border border-neutral-700" onError={(e) => (e.currentTarget.style.opacity = '0.3')} />
                         <div className="absolute top-0 left-0 bg-black/70 text-white text-[10px] px-1 rounded-br">{i + 1}</div>
                       </div>
                     ))}

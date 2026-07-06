@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { STORIES, Story } from '@/lib/stories'
 import { CREATOR_META, Creator } from '@/lib/types'
 import { isDone, setDone } from '@/lib/doneState'
+import { cleanImg } from '@/lib/img'
 
 const CREATORS: Creator[] = ['Siya', 'Kiara', 'Mia', 'Ava']
 
@@ -119,7 +120,7 @@ function StackCard({ group, onClick }: { group: StoryGroup; onClick: () => void 
     >
       <div className="aspect-[9/16] relative bg-neutral-950 overflow-hidden">
         {cover.imageUrl ? (
-          <img src={cover.imageUrl} alt={cover.concept} className="w-full h-full object-cover" loading="lazy" />
+          <img src={cleanImg(cover.imageUrl)} alt={cover.concept} className="w-full h-full object-cover" loading="lazy" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-5xl">{cover.emoji}</div>
         )}
@@ -184,7 +185,7 @@ function StoryStackModal({ group, onClose }: { group: StoryGroup; onClose: () =>
       for (let i = 0; i < group.stories.length; i++) {
         const s = group.stories[i]
         if (!s.imageUrl) continue
-        const res = await fetch(s.imageUrl)
+        const res = await fetch(cleanImg(s.imageUrl))
         const blob = await res.blob()
         const objUrl = URL.createObjectURL(blob)
         const a = document.createElement('a')
@@ -275,7 +276,7 @@ function StoryStackModal({ group, onClose }: { group: StoryGroup; onClose: () =>
           {/* LEFT — image viewer with prev/next */}
           <div className="bg-neutral-950 aspect-[9/16] md:aspect-auto min-h-[520px] flex items-center justify-center relative overflow-hidden">
             {current.imageUrl ? (
-              <img key={current.imageUrl} src={current.imageUrl} alt={current.concept} className="w-full h-full object-cover" />
+              <img key={current.imageUrl} src={cleanImg(current.imageUrl)} alt={current.concept} className="w-full h-full object-cover" />
             ) : (
               <div className="text-8xl">{current.emoji}</div>
             )}
